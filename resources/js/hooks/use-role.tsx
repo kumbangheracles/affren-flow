@@ -1,0 +1,21 @@
+import { UserProps } from '@/types/user.type';
+import { PageProps as InertiaPageProps } from '@inertiajs/core';
+import { usePage } from '@inertiajs/react';
+
+interface PageProps extends InertiaPageProps {
+    auth: {
+        user: UserProps;
+    };
+}
+
+type RoleName = 'admin' | 'mandor';
+const useRole = () => {
+    const page = usePage<PageProps>();
+    const currentRole = page?.props?.auth?.user?.role?.role_name?.toLowerCase() as RoleName;
+
+    return {
+        currentRole,
+    };
+};
+
+export default useRole;

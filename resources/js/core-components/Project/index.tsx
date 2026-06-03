@@ -6,6 +6,7 @@ import { DropdownMenuItem } from '@/components/ui-shadcn/dropdown-menu';
 import { Button } from '@/components/ui/button';
 import { Modal, ModalBody, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui/modal';
 import { useIsMobile } from '@/hooks/use-mobile';
+import useRole from '@/hooks/use-role';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
@@ -34,14 +35,13 @@ interface PropTypes {
 
 const ProjectIndex = ({ proyeks, filters }: PropTypes) => {
     const [open, setIsOpen] = useState<boolean>(false);
-    // const [optionStatus, setOptionStatus] = useState<StatusProyek | null>(null);
     const [selectedProyekId, setSelectedProyekId] = useState<string | null>(null);
     const [selectedDataProyek, setSelectedDataProyek] = useState<ProyekProps | null>(null);
     const isMobile = useIsMobile();
-    // const [loading, setLoading] = useState<boolean>(false);
     const form = useForm<ProyekProps>(initialProyek);
     const { processing } = form;
     const [statusFilter, setStatusFilter] = useState<StatusProyek | null>(filters.status);
+    const { currentRole } = useRole();
     const currentPage = new URLSearchParams(window.location.search).get('page') ?? '1';
     const currentPerPage = new URLSearchParams(window.location.search).get('per_page') ?? '10';
     const [search, setSearch] = useState(filters?.search ?? '');
@@ -96,7 +96,13 @@ const ProjectIndex = ({ proyeks, filters }: PropTypes) => {
     };
 
     const handleUpdateOptionStatus = (proyek_id: string, status: StatusProyek, nama_proyek: string) => {
+        if (currentRole !== 'admin') {
+            toast?.info('Hanya admin yang bisa ubah status proyek.');
+            return;
+        }
+
         if (!proyek_id) return;
+
         const currentPage = new URLSearchParams(window.location.search).get('page') ?? '1';
         router.patch(
             `/project/${proyek_id}?page=${currentPage}&per_page=${currentPerPage}`,
@@ -228,34 +234,50 @@ const ProjectIndex = ({ proyeks, filters }: PropTypes) => {
                         openDisplay={<EllipsisVertical />}
                         menuItem={
                             <>
-                                <div className="flex flex-col gap-2 p-2">
-                                    {/* Detail */}
-                                    <DropdownMenuItem
-                                        onClick={() => router?.visit(`/project/${record?.proyek_id}/detail`)}
-                                        className={cn('group hover:bg-muted! flex cursor-pointer items-center justify-between p-2')}
-                                    >
-                                        <p className={cn('text-foreground! group-hover:text-chart-1!')}>Detail</p>
-                                        <Eye className={cn('text-muted-foreground! group-hover:text-chart-1!')} />
-                                    </DropdownMenuItem>
+                                {currentRole === 'admin' && (
+                                    <div className="flex flex-col gap-2 p-2">
+                                        {/* Detail */}
+                                        <DropdownMenuItem
+                                            onClick={() => router?.visit(`/project/${record?.proyek_id}/detail`)}
+                                            className={cn('group hover:bg-muted! flex cursor-pointer items-center justify-between p-2')}
+                                        >
+                                            <p className={cn('text-foreground! group-hover:text-chart-1!')}>Detail</p>
+                                            <Eye className={cn('text-muted-foreground! group-hover:text-chart-1!')} />
+                                        </DropdownMenuItem>
 
-                                    {/* Ubah */}
-                                    <DropdownMenuItem
-                                        onClick={() => router?.visit(`/project/${record?.proyek_id}/edit`)}
-                                        className={cn('group hover:bg-muted! flex cursor-pointer items-center justify-between p-2')}
-                                    >
-                                        <p className={cn('text-foreground! group-hover:text-chart-2!')}>Ubah</p>
-                                        <Edit className={cn('text-muted-foreground! group-hover:text-chart-2!')} />
-                                    </DropdownMenuItem>
+                                        {/* Ubah */}
+                                        <DropdownMenuItem
+                                            onClick={() => router?.visit(`/project/${record?.proyek_id}/edit`)}
+                                            className={cn('group hover:bg-muted! flex cursor-pointer items-center justify-between p-2')}
+                                        >
+                                            <p className={cn('text-foreground! group-hover:text-chart-2!')}>Ubah</p>
+                                            <Edit className={cn('text-muted-foreground! group-hover:text-chart-2!')} />
+                                        </DropdownMenuItem>
 
-                                    {/* Hapus */}
-                                    <DropdownMenuItem
-                                        onClick={() => OpenDeleteModal(record?.proyek_id)}
-                                        className={cn('group hover:bg-error/10! flex cursor-pointer items-center justify-between p-2 transition-all')}
-                                    >
-                                        <p className={cn('text-foreground! group-hover:text-error!')}>Hapus</p>
-                                        <Trash className={cn('text-muted-foreground! group-hover:text-error!')} />
-                                    </DropdownMenuItem>
-                                </div>
+                                        {/* Hapus */}
+                                        <DropdownMenuItem
+                                            onClick={() => OpenDeleteModal(record?.proyek_id)}
+                                            className={cn(
+                                                'group hover:bg-error/10! flex cursor-pointer items-center justify-between p-2 transition-all',
+                                            )}
+                                        >
+                                            <p className={cn('text-foreground! group-hover:text-error!')}>Hapus</p>
+                                            <Trash className={cn('text-muted-foreground! group-hover:text-error!')} />
+                                        </DropdownMenuItem>
+                                    </div>
+                                )}
+
+                                {currentRole === 'mandor' && (
+                                    <div className="flex flex-col gap-2 p-2">
+                                        <DropdownMenuItem
+                                            onClick={() => router?.visit(`/project/${record?.proyek_id}/detail`)}
+                                            className={cn('group hover:bg-muted! flex cursor-pointer items-center justify-between p-2')}
+                                        >
+                                            <p className={cn('text-foreground! group-hover:text-chart-1!')}>Detail</p>
+                                            <Eye className={cn('text-muted-foreground! group-hover:text-chart-1!')} />
+                                        </DropdownMenuItem>
+                                    </div>
+                                )}
                             </>
                         }
                     />
@@ -289,15 +311,18 @@ const ProjectIndex = ({ proyeks, filters }: PropTypes) => {
                             triggerClassName="min-w-33"
                             placeholder="Filter Status"
                         />
-                        <Button
-                            className="mt-2 cursor-pointer"
-                            disabled={processing}
-                            size={isMobile ? 'sm' : 'default'}
-                            onClick={() => router.visit('/project/create')}
-                        >
-                            <Plus />
-                            <p>Proyek Baru</p>
-                        </Button>
+
+                        {currentRole === 'admin' && (
+                            <Button
+                                className="mt-2 cursor-pointer"
+                                disabled={processing}
+                                size={isMobile ? 'sm' : 'default'}
+                                onClick={() => router.visit('/project/create')}
+                            >
+                                <Plus />
+                                <p>Proyek Baru</p>
+                            </Button>
+                        )}
                     </div>
                 </div>
                 <DataTable

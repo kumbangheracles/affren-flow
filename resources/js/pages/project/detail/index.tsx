@@ -1,12 +1,7 @@
 import ProjectDetailIndex from '@/core-components/Project/detail';
-import { ProyekProps } from '@/types/project.type';
 
-interface PropTypes {
-    proyek?: ProyekProps;
-}
-
-const ProjectDetailPage = ({ proyek }: PropTypes) => {
-    return <ProjectDetailIndex proyek={proyek as ProyekProps} />;
+const ProjectDetailPage = () => {
+    return <ProjectDetailIndex />;
 };
 
 export default ProjectDetailPage;

@@ -45,7 +45,7 @@ class HandleInertiaRequests extends Middleware
                 'author' => trim($author),
             ],
             'auth' => [
-                'user' => $request->user(),
+                'user' => $request->user()?->load('role'),
             ],
 
             'flash' => [

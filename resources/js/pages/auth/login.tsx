@@ -1,3 +1,4 @@
+import AppLogo from '@/components/app-logo';
 import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
@@ -18,9 +19,6 @@ interface LoginProps {
     canResetPassword: boolean;
 }
 
-/* ─────────────────────────────────────────
-   BANNER — animated finance illustration
-───────────────────────────────────────── */
 export function FinanceBanner() {
     return (
         <div className="relative hidden w-[46%] flex-shrink-0 overflow-hidden md:flex" style={{ background: '#2f3e46' }}>
@@ -34,17 +32,8 @@ export function FinanceBanner() {
             />
 
             <div className="absolute top-7 left-7 z-10 flex items-center gap-2">
-                <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-[5px]" style={{ background: '#c9a84c' }}>
-                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                        <rect x="1" y="10" width="16" height="6" rx="1" fill="#2f3e46" />
-                        <rect x="4" y="6" width="10" height="5" fill="#2f3e46" />
-                        <rect x="7" y="1" width="4" height="6" fill="#2f3e46" />
-                        <rect x="3" y="12" width="2" height="4" fill="#354f52" />
-                        <rect x="8" y="12" width="2" height="4" fill="#354f52" />
-                        <rect x="13" y="12" width="2" height="4" fill="#354f52" />
-                    </svg>
-                </div>
-                <span
+                <AppLogo />
+                {/* <span
                     style={{
                         fontFamily: "'Barlow Condensed', sans-serif",
                         fontSize: 16,
@@ -53,8 +42,8 @@ export function FinanceBanner() {
                         letterSpacing: '0.06em',
                     }}
                 >
-                    AFFREN<span style={{ color: '#c9a84c' }}>FLOW</span>
-                </span>
+                    AFFREN<span className="text-muted-foreground">FLOW</span>
+                </span> */}
             </div>
 
             <div className="absolute inset-0 flex items-center justify-center">
