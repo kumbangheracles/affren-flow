@@ -16,7 +16,7 @@ class JenisProyekController extends Controller
         $perPage = $request->query('per_page', 10);
 
         $jenis = JenisProyek::query()
-            ->with('kategoriProyek')
+            ->with('kategoriProyek')->with('creator.role')
             ->when($search, function ($q) use ($search) {
                 $q->where('nama', 'like', "%{$search}%");
             })
@@ -51,7 +51,11 @@ class JenisProyekController extends Controller
             'nama.unique'                 => 'Nama jenis proyek sudah ada di kategori ini.',
         ]);
 
-        JenisProyek::create($validated);
+        JenisProyek::create([
+            'nama' => $validated['nama'],
+            'kategori_proyek_id' => $validated['kategori_proyek_id'],
+            'created_by' => $request->user()->id,
+        ]);
 
         return back()->with('success', 'Jenis proyek berhasil ditambahkan.');
     }
@@ -72,7 +76,11 @@ class JenisProyekController extends Controller
             'nama.unique'                 => 'Nama jenis proyek sudah ada di kategori ini.',
         ]);
 
-        $jenisProyek->update($validated);
+        $jenisProyek->update([
+            'nama' => $validated['nama'],
+            'kategori_proyek_id' => $validated['kategori_proyek_id'],
+            'created_by' => $request->user()->id,
+        ]);
 
         return back()->with('success', 'Jenis proyek berhasil diperbarui.');
     }

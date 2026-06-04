@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->foreignId('kategori_proyek_id')->constrained('kategori_proyek');
             $table->string('nama'); // SAB, Balai Warga, Paving Block, dll
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->default(1);
             $table->timestamps();
         });
     }

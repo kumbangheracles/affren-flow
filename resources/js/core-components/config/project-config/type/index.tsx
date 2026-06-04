@@ -196,8 +196,16 @@ const ProjectConfigTypeIndex = () => {
             render: (_: any, row: JenisProyek) => <span className="text-sm font-medium">{row?.kategori_proyek?.nama}</span>,
         },
         {
+            key: 'created_by',
+            label: 'Dibuat oleh',
+            className: 'text-left',
+            render: (_: any, row: JenisProyek) => (
+                <span className="text-background bg-foreground rounded-xl px-1 py-1 text-sm font-semibold">{row?.creator?.name || '-'}</span>
+            ),
+        },
+        {
             key: 'created_at',
-            label: 'Dibuat',
+            label: 'Tanggal dibuat',
             className: 'text-left',
             render: (_: any, row: JenisProyek) => (
                 <span className="text-muted-foreground text-sm">{row.created_at ? new Date(row.created_at).toLocaleDateString('id-ID') : '-'}</span>

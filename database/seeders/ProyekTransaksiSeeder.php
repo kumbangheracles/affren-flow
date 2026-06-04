@@ -75,6 +75,7 @@ class ProyekTransaksiSeeder extends Seeder
                 'nama_klien'         => fake()->company(),
                 'status'             => $status,
                 'deskripsi_proyek'   => fake()->sentence(10),
+                'created_by' => 1
             ]);
 
             $this->buatTransaksiPengeluaran($proyek, (float) $pagu, $mulai);

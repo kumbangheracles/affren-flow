@@ -6,10 +6,10 @@ import { DropdownMenuItem } from '@/components/ui-shadcn/dropdown-menu';
 import { Modal, ModalBody, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui-shadcn/modal';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
+import useRole from '@/hooks/use-role';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
-import { initialJenisProyekForm, JenisProyek } from '@/types/jenis_proyek.type';
 import { initialKategoriProyekForm, KategoriProyek, KategoriProyekForm } from '@/types/kategori_proyek.type';
 import { PaginatedResponse } from '@/types/laravel.type';
 import { PageProps as InertiaPageProps, router } from '@inertiajs/core';
@@ -44,10 +44,19 @@ const ProjectConfigCategoryIndex = () => {
     const isMobile = useIsMobile();
     const currentPerPage = new URLSearchParams(window.location.search).get('per_page') ?? '10';
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
     const form = useForm<KategoriProyekForm>(initialKategoriProyekForm);
     const { data, setData, post, processing, errors, put, delete: deleteJenis } = form;
+    const { currentUser, currentRole } = useRole();
 
+    if (currentRole !== 'admin') {
+        toast.info('Hanya admin yg bisa akses fitur ini.');
+        router.visit('dashboard');
+        return;
+    }
+
+    // useEffect(() => {
+    //     setData('created_by', currentUser?.id);
+    // }, []);
     const handleSearch = (val: string) => {
         setSearch(val);
 
@@ -155,7 +164,7 @@ const ProjectConfigCategoryIndex = () => {
     const handleCloseModal = () => {
         setSelectedId(null);
         setSelectedModalType(null);
-        setData(initialJenisProyekForm);
+        setData(initialKategoriProyekForm);
         setSelectedDataKategori(null);
     };
 
@@ -180,11 +189,18 @@ const ProjectConfigCategoryIndex = () => {
             className: 'text-left max-w-[200px]',
             render: (_: any, row: KategoriProyek) => <span className="block max-w-[200px] truncate text-sm font-medium">{row.nama}</span>,
         },
-
+        {
+            key: 'created_by',
+            label: 'Dibuat oleh',
+            className: 'text-left',
+            render: (_: any, row: KategoriProyek) => (
+                <span className="text-background bg-foreground rounded-xl px-1 py-1 text-sm font-semibold">{row?.creator?.name || '-'}</span>
+            ),
+        },
         {
             key: 'created_at',
-            label: 'Dibuat',
-            className: 'text-left',
+            label: 'Tanggal dibuat',
+            className: 'text-start pl-5',
             render: (_: any, row: KategoriProyek) => (
                 <span className="text-muted-foreground text-sm">{row.created_at ? new Date(row.created_at).toLocaleDateString('id-ID') : '-'}</span>
             ),
@@ -263,7 +279,7 @@ const ProjectConfigCategoryIndex = () => {
                 <DataTable
                     className="mt-4"
                     emptyMessage="Tidak ada kategori proyek saat ini"
-                    data={list_kategori?.data as JenisProyek[]}
+                    data={list_kategori?.data as KategoriProyek[]}
                     columns={LIST_TYPE_COLUMNS}
                     key={list_kategori?.data?.length}
                     mobileColumns={['nama', 'created_at', 'action']}

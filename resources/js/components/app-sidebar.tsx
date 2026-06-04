@@ -87,13 +87,13 @@ export function AppSidebar() {
             title: 'Forecasting',
             url: '/forecasting',
             icon: ChartBar,
-            roles: ['admin'], // 🔒 admin only
+            roles: ['admin'],
         },
         {
             title: 'Konfigurasi',
             url: '/config',
             icon: Cog,
-            roles: ['admin'], // 🔒 admin only
+            roles: ['admin'],
             items: [
                 {
                     title: 'Kategori Proyek',

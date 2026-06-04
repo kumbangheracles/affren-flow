@@ -16,10 +16,15 @@ class KategoriProyek extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
-    protected $fillable = ['nama'];
+    protected $fillable = ['nama', 'created_by'];
 
     public function jenisProyek(): HasMany
     {
         return $this->hasMany(JenisProyek::class, 'kategori_proyek_id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

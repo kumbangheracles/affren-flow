@@ -53,4 +53,17 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Role::class, 'id', 'id');
     }
+
+    public function kategoriProyek()
+    {
+        return $this->hasMany(KategoriProyek::class, 'created_by');
+    }
+    public function jenisProyek()
+    {
+        return $this->hasMany(JenisProyek::class, 'created_by');
+    }
+    public function proyek()
+    {
+        return $this->hasMany(Proyek::class, 'created_by');
+    }
 }

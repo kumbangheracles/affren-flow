@@ -20,6 +20,7 @@ class ProyekSeeder extends Seeder
             'tanggal_mulai' => '2025-01-10',
             'tanggal_selesai' => '2025-03-15',
             'pajak_persen' => 11.00,
+            'created_by' => 1,
             // 'uang_bahan_persen' => 40.00,
             // 'jasa_tukang_persen' => 30.00,
             // 'biaya_tak_terduga_persen' => 25.00,
@@ -35,6 +36,7 @@ class ProyekSeeder extends Seeder
             'kategori_proyek_id' => 2, // Irigasi
             'jenis_proyek_id' => 12,   // Udith
             'pagu_total' => 250000000,
+            'created_by' => 1,
             'tanggal_mulai' => '2025-02-01',
             'tanggal_selesai' => '2025-05-30',
             'pajak_persen' => 11.00,
@@ -53,6 +55,7 @@ class ProyekSeeder extends Seeder
             'kategori_proyek_id' => 3, // Jalan
             'jenis_proyek_id' => 17,   // Betonisasi
             'pagu_total' => 500000000,
+            'created_by' => 1,
             'tanggal_mulai' => '2024-11-01',
             'tanggal_selesai' => '2025-01-20',
             'pajak_persen' => 11.00,
@@ -78,6 +81,7 @@ class ProyekSeeder extends Seeder
 
             Proyek::create([
                 'nama_proyek' => "Proyek {$i}",
+                'created_by' => 1,
                 'kategori_proyek_id' => $kategori,
                 'jenis_proyek_id' => $jenisMap[$kategori][array_rand($jenisMap[$kategori])],
                 'pagu_total' => rand(100000000, 500000000),

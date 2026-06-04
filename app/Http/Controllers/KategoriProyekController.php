@@ -15,7 +15,7 @@ class KategoriProyekController extends Controller
         $perPage = $request->query('per_page', 10);
 
         $kategori = KategoriProyek::query()
-            ->with('jenisProyek')
+            ->with('jenisProyek')->with('creator.role')
             ->when($search, fn($q) => $q->where('nama', 'like', "%{$search}%"))
             ->latest()
             ->paginate($perPage)
@@ -39,7 +39,10 @@ class KategoriProyekController extends Controller
             'nama.unique'   => 'Nama kategori sudah ada.',
         ]);
 
-        KategoriProyek::create($validated);
+        KategoriProyek::create([
+            'nama' => $validated['nama'],
+            'created_by' => $request->user()->id,
+        ]);
 
         return back()->with('success', 'Kategori berhasil ditambahkan.');
     }
@@ -58,7 +61,10 @@ class KategoriProyekController extends Controller
             'nama.unique'   => 'Nama kategori sudah ada.',
         ]);
 
-        $kategoriProyek->update($validated);
+        $kategoriProyek->update([
+            'nama' => $validated['nama'],
+            'created_by' => $request->user()->id,
+        ]);
 
         return back()->with('success', 'Kategori berhasil diperbarui.');
     }

@@ -31,6 +31,7 @@ class Proyek extends Model
         // 'biaya_tak_terduga_persen',
         'nama_klien',
         'status',
+        'created_by',
         'deskripsi_proyek',
 
     ];
@@ -60,5 +61,10 @@ class Proyek extends Model
     public function jenis()
     {
         return $this->belongsTo(JenisProyek::class, 'jenis_proyek_id', 'id');
+    }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

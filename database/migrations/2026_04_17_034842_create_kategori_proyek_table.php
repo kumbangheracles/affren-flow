@@ -14,6 +14,10 @@ return new class extends Migration
         Schema::create('kategori_proyek', function (Blueprint $table) {
             $table->id();
             $table->string('nama'); // Gedung, Jalan, Irigasi
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->default(1);
             $table->timestamps();
         });
     }

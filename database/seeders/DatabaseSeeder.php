@@ -22,9 +22,7 @@ class DatabaseSeeder extends Seeder
         // User::factory(10)->create();
         $this->call([
             RoleSeeder::class,
-            KategoriProyekSeeder::class,
-            JenisProyekSeeder::class,
-            ProyekTransaksiSeeder::class,
+
         ]);
         User::factory()->create([
             'name' => 'herkaladmin',
@@ -38,6 +36,12 @@ class DatabaseSeeder extends Seeder
             'email' => 'herkal@mandor.com',
             'password' => bcrypt('herkal123'),
             'role_id' => Role::where('role_name', 'Mandor')->value('id'),
+        ]);
+
+        $this->call([
+            KategoriProyekSeeder::class,
+            JenisProyekSeeder::class,
+            ProyekTransaksiSeeder::class,
         ]);
 
         // $this->call(ProyekSeeder::class);

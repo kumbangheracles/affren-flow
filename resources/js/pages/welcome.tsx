@@ -1,6 +1,6 @@
+import { Button } from '@/components/ui/button';
+import { router } from '@inertiajs/react';
 import { useState } from 'react';
-
-// ── Google Fonts ─────────────────────────────────────────────────────────────
 if (!document.getElementById('af-font-link')) {
     const link = document.createElement('link');
     link.id = 'af-font-link';
@@ -10,7 +10,6 @@ if (!document.getElementById('af-font-link')) {
     document.head.appendChild(link);
 }
 
-// ── Styles ───────────────────────────────────────────────────────────────────
 const STYLES = `
   :root {
     /* ── Palette: Finance × Earth Teal ── */
@@ -362,7 +361,6 @@ if (!document.getElementById('affren-profile-styles')) {
     document.head.appendChild(s);
 }
 
-// ── Data ─────────────────────────────────────────────────────────────────────
 const CATEGORIES = [
     { id: 1, nama: 'Gedung' },
     { id: 2, nama: 'Irigasi' },
@@ -370,7 +368,6 @@ const CATEGORIES = [
 ];
 
 const SUB_CATEGORIES = [
-    // GEDUNG
     { cat: 1, nama: 'SAB', icon: '🏛️' },
     { cat: 1, nama: 'Balai Warga', icon: '🏠' },
     { cat: 1, nama: 'GSG', icon: '🏟️' },
@@ -382,11 +379,9 @@ const SUB_CATEGORIES = [
     { cat: 1, nama: 'Gapura', icon: '🚪' },
     { cat: 1, nama: 'Rumah Tidak Layak Huni (Bedah Rumah)', icon: '🏡' },
     { cat: 1, nama: 'Pemagaran', icon: '⬜' },
-    // IRIGASI
     { cat: 2, nama: 'U-DITCH', icon: '🌊' },
     { cat: 2, nama: 'TPT (TURAB)', icon: '🪨' },
     { cat: 2, nama: 'SPAL Rumah Tangga (Batu Kali)', icon: '💧' },
-    // JALAN
     { cat: 3, nama: 'Paving Block', icon: '🟫' },
     { cat: 3, nama: 'Betonisasi', icon: '🔩' },
     { cat: 3, nama: 'Hotmix (Aspal)', icon: '🛣️' },
@@ -436,7 +431,6 @@ const PROCESS = [
     { n: '04', title: 'Serah Terima', desc: 'Pemeriksaan akhir bersama, dokumentasi, dan serah terima proyek lengkap dengan garansi pekerjaan.' },
 ];
 
-// ── Component ─────────────────────────────────────────────────────────────────
 export default function AffrenProfile() {
     const [activeCat, setActiveCat] = useState(1);
     const scroll = (id: string) => document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
@@ -446,7 +440,6 @@ export default function AffrenProfile() {
 
     return (
         <div className="cp-root">
-            {/* ── NAV ── */}
             <nav className="cp-nav">
                 <div className="cp-logo-wrap">
                     <span className="cp-logo-main">Affren Nurzzahrah</span>
@@ -479,7 +472,6 @@ export default function AffrenProfile() {
                 </ul>
             </nav>
 
-            {/* ── HERO ── */}
             <section className="cp-hero">
                 <div className="cp-hero-left">
                     <div className="cp-hero-tag">Penyedia Jasa Konstruksi</div>
@@ -520,7 +512,6 @@ export default function AffrenProfile() {
                 </div>
             </section>
 
-            {/* ── TENTANG ── */}
             <section id="tentang" className="cp-section cp-about">
                 <div className="cp-about-grid">
                     <div className="cp-about-visual">
@@ -570,7 +561,6 @@ export default function AffrenProfile() {
                 </div>
             </section>
 
-            {/* ── LAYANAN PROYEK ── */}
             <section id="proyek" className="cp-section">
                 <p className="cp-section-tag">Layanan Proyek</p>
                 <h2 className="cp-h2">
@@ -600,7 +590,6 @@ export default function AffrenProfile() {
                 </div>
             </section>
 
-            {/* ── PROSES ── */}
             <section className="cp-section cp-process-section">
                 <p className="cp-section-tag">Alur Kerja</p>
                 <h2 className="cp-h2">
@@ -621,7 +610,6 @@ export default function AffrenProfile() {
                 </div>
             </section>
 
-            {/* ── KEUNGGULAN ── */}
             <section id="keunggulan" className="cp-section">
                 <p className="cp-section-tag">Mengapa Kami</p>
                 <h2 className="cp-h2">
@@ -640,7 +628,6 @@ export default function AffrenProfile() {
                 </div>
             </section>
 
-            {/* ── CTA / KONTAK ── */}
             <section id="kontak" className="cp-cta-section">
                 <h2 className="cp-cta-h2">
                     Siap memulai <em>proyek Anda</em> bersama kami?
@@ -652,11 +639,31 @@ export default function AffrenProfile() {
                 </div>
             </section>
 
-            {/* ── FOOTER ── */}
             <footer className="cp-footer">
                 <div>
                     <div className="cp-footer-logo">Affren Nurzzahrah</div>
                     <div className="cp-footer-sub">Jasa Konstruksi</div>
+                    <Button onClick={() => router.visit('/login')} className="text-foreground mt-2 flex items-center gap-3 font-serif">
+                        <p>Masuk Sebagai Admin</p>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="24"
+                            height="24"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            className="lucide lucide-user-round-key-icon lucide-user-round-key"
+                        >
+                            <path d="M19 11v6" />
+                            <path d="M19 13h2" />
+                            <path d="M2 21a8 8 0 0 1 12.868-6.349" />
+                            <circle cx="10" cy="8" r="5" />
+                            <circle cx="19" cy="19" r="2" />
+                        </svg>
+                    </Button>
                 </div>
                 <p className="cp-footer-copy">© 2026 CV. Affren Nurzzahrah. Hak cipta dilindungi.</p>
                 <ul className="cp-footer-links">

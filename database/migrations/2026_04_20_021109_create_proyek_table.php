@@ -42,6 +42,12 @@ return new class extends Migration
                 'selesai',
                 'dibatalkan'
             ]);
+
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete()
+                ->default(1);
+
             $table->longText('deskripsi_proyek')->nullable();
 
             $table->timestamps();

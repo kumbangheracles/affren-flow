@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 use App\Services\FinanceService;
+use Illuminate\Support\Facades\Auth;
 
 class ProyekController extends Controller
 
@@ -53,7 +54,7 @@ class ProyekController extends Controller
             }
         );
         $proyeks = $query
-            ->latest()
+            ->latest()->with('creator.role')
             ->paginate($request->input('per_page', 10))
             ->withQueryString();
 
@@ -92,50 +93,34 @@ class ProyekController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        //
-        //validate form
         $data = $request->validate([
             'nama_proyek' => 'required|string|max:255',
-            // 'tipe_proyek' => 'required|in:papping,u_ditch,spall,beton,sab',
             'pagu_total' => 'required|numeric|min:0',
             'kategori_proyek_id' => 'required|numeric|min:1',
             'jenis_proyek_id' => 'required|numeric|min:1',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
             'pajak_persen' => 'required|numeric|min:0|max:100',
-            // 'uang_bahan_persen' => 'required|numeric|min:0|max:100',
-            // 'jasa_tukang_persen' => 'required|numeric|min:0|max:100',
-            // 'biaya_tak_terduga_persen' => 'required|numeric|min:0|max:100',
-            // 'biaya_staff_perpajakan' => 'required|numeric|min:0',
-            // 'biaya_staff_entry_data' => 'required|numeric|min:0',
             'nama_klien' => 'required|string|max:255',
             'status' => 'required|in:sedang_berjalan,selesai,dibatalkan',
             'deskripsi_proyek' => 'nullable|string',
         ]);
-        // if (!$request->jasa_tukang_persen) {
-        //     $defaults = match ($request->tipe_proyek) {
-        //         'papping' => 11,
-        //         'u_ditch' => 15,
-        //         'spall' => 15,
-        //         'beton' => 18,
-        //         'sab' => 18,
-        //         default => 0,
-        //     };
 
-        //     $data['jasa_tukang_persen'] = $defaults;
-        // }
+        $data['created_by'] = Auth::id();
+
         Proyek::create($data);
 
-        return redirect()->route('project.index')->with(['success' => 'Proyek baru berhasil disimpan!']);
+        return redirect()
+            ->route('project.index')
+            ->with('success', 'Proyek baru berhasil disimpan!');
     }
-
     /**
      * Display the specified resource.
      */
     public function show($proyek_id)
     {
         //
-        $proyek = Proyek::with(['kategori', 'jenis'])
+        $proyek = Proyek::with(['kategori', 'jenis'])->with('creator.role')
             ->findOrFail($proyek_id);
         $anggaran = $this->financeService->hitungAnggaranProyek($proyek);
         $realisasi = $this->financeService->hitungRealisasiPerKategori($proyek);
@@ -191,7 +176,7 @@ class ProyekController extends Controller
             'status' => 'required|in:sedang_berjalan,selesai,dibatalkan',
             'deskripsi_proyek' => 'nullable|string',
         ]);
-
+        $data['created_by'] = Auth::id();
         $proyek->update($data);
 
         return redirect()

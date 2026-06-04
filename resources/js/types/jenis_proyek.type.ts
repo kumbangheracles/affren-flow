@@ -1,10 +1,12 @@
 import { KategoriProyek } from './kategori_proyek.type';
+import { UserProps } from './user.type';
 
 export interface JenisProyek {
     id: number;
     kategori_proyek_id: number;
     nama: string;
     kategori_proyek: KategoriProyek;
+    creator?: UserProps;
     created_at?: string;
     updated_at?: string;
 }
@@ -19,6 +21,7 @@ export const initialJenisProyekForm: JenisProyekForm = {
     kategori_proyek: {
         id: 0,
         nama: '',
+        created_by: '',
         created_at: undefined,
         updated_at: undefined,
     },

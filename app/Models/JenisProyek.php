@@ -15,10 +15,14 @@ class JenisProyek extends Model
     public $incrementing = true;
     protected $keyType = 'int';
 
-    protected $fillable = ['kategori_proyek_id', 'nama'];
+    protected $fillable = ['kategori_proyek_id', 'nama', 'created_by'];
 
     public function kategoriProyek(): BelongsTo
     {
         return $this->belongsTo(KategoriProyek::class, 'kategori_proyek_id');
+    }
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'created_by');
     }
 }

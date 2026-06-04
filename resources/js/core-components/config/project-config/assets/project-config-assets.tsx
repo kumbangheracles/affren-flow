@@ -14,9 +14,10 @@ export const LIST_CATEGORY_COLUMNS: Column<KategoriProyek>[] = [
         className: 'text-left',
         render: (_: any, row: KategoriProyek) => <span className="text-sm font-medium">{row.nama}</span>,
     },
+
     {
         key: 'created_at',
-        label: 'Dibuat',
+        label: 'Tanggal dibuat',
         className: 'text-center',
         render: (_: any, row: KategoriProyek) => (
             <span className="text-muted-foreground text-sm">{row.created_at ? new Date(row.created_at).toLocaleDateString('id-ID') : '-'}</span>
