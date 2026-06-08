@@ -26,15 +26,19 @@ class DatabaseSeeder extends Seeder
         ]);
         User::factory()->create([
             'name' => 'herkaladmin',
+            'nama_lengkap' => 'Ahmad Herkal Taqyudin',
             'email' => 'herkal@admin.com',
             'password' => bcrypt('herkal123'),
+            'isActive' => true,
             'role_id' => Role::where('role_name', 'Admin')->value('id'),
         ]);
 
         User::factory()->create([
             'name' => 'herkalmandor',
+            'nama_lengkap' => 'Ahmad Herkal Taqyudin',
             'email' => 'herkal@mandor.com',
             'password' => bcrypt('herkal123'),
+            'isActive' => true,
             'role_id' => Role::where('role_name', 'Mandor')->value('id'),
         ]);
 

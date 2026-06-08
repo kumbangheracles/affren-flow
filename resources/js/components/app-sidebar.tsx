@@ -5,7 +5,7 @@ import { BaseResponse, NavGroup } from '@/types';
 import { UserProps } from '@/types/user.type';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { usePage } from '@inertiajs/react';
-import { Blocks, ChartBar, ChevronsUpDown, Cog, LayoutGrid, Pickaxe, Plus, Wallet, Wrench } from 'lucide-react';
+import { Blocks, ChartBar, ChevronsUpDown, Cog, LayoutGrid, Pickaxe, Plus, User, Wallet, Wrench } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import AppLogo from './app-logo';
 import { NavFooter } from './nav-footer';
@@ -87,6 +87,12 @@ export function AppSidebar() {
             title: 'Forecasting',
             url: '/forecasting',
             icon: ChartBar,
+            roles: ['admin'],
+        },
+        {
+            title: 'User',
+            url: '/user',
+            icon: User,
             roles: ['admin'],
         },
         {

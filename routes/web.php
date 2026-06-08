@@ -9,8 +9,7 @@ use App\Http\Controllers\KategoriProyekController;
 use App\Http\Controllers\JenisProyekController;
 use App\Http\Controllers\ForecastController;
 use App\Http\Controllers\DashboardController;
-
-
+use App\Http\Controllers\UserController;
 
 Route::middleware(['auth'])->group(function () {
 
@@ -53,6 +52,13 @@ Route::middleware(['auth'])->group(function () {
         Route::patch('/{item_id}/status',    [ItemTransaksiController::class, 'updateStatus'])->name('updateStatus');
         Route::delete('/{item_id}', [ItemTransaksiController::class, 'destroy'])->name('destroy');
     });
+
+
+    // User
+    Route::get('/user', [UserController::class, 'index'])->name('user.index');
+    Route::post('/user', [UserController::class, 'store'])->name('user.store');
+    Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
+    Route::delete('/user/{id}', [UserController::class, 'delete'])->name('user.delete');
 
 
 

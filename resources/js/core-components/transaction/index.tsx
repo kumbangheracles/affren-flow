@@ -8,6 +8,7 @@ import { Modal, ModalBody, ModalClose, ModalContent, ModalFooter, ModalHeader, M
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatDate, formatPercent } from '@/helpers/format';
 import { useIsMobile } from '@/hooks/use-mobile';
+import useRole from '@/hooks/use-role';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
@@ -42,6 +43,7 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
     const [selectedDataTransaksi, setSelectedDataTransaksi] = useState<TransaksiProps | null>(null);
     const currentPage = new URLSearchParams(window.location.search).get('page') ?? '1';
     const currentPerPage = new URLSearchParams(window.location.search).get('per_page') ?? '10';
+    const { currentRole } = useRole();
     const [search, setSearch] = useState(filters.search ?? '');
     const [kategoriFilter, setKategoriFilter] = useState<KategoriTransaksi | null>(filters.kategori ?? null);
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -240,7 +242,6 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
                         menuItem={
                             <>
                                 <div className="flex flex-col gap-2 p-2">
-                                    {/* Detail */}
                                     <DropdownMenuItem
                                         onClick={() => router?.visit(`/transaction/${record?.transaksi_id}/detail`)}
                                         className={cn('group hover:bg-muted! flex cursor-pointer items-center justify-between p-2')}
@@ -249,7 +250,6 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
                                         <Eye className={cn('text-muted-foreground! group-hover:text-chart-1!')} />
                                     </DropdownMenuItem>
 
-                                    {/* Ubah */}
                                     <DropdownMenuItem
                                         onClick={() => router?.visit(`/transaction/${record?.transaksi_id}/edit`)}
                                         className={cn('group hover:bg-muted! flex cursor-pointer items-center justify-between p-2')}
@@ -258,15 +258,18 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
                                         <Edit className={cn('text-muted-foreground! group-hover:text-chart-2!')} />
                                     </DropdownMenuItem>
 
-                                    {/* Hapus */}
-                                    <DropdownMenuItem
-                                        // onClick={() => OpenModal(record?.transaksi_id)}
-                                        className={cn('group hover:bg-error/10! flex cursor-pointer items-center justify-between p-2 transition-all')}
-                                        onClick={() => OpenModal(record?.transaksi_id, 'delete')}
-                                    >
-                                        <p className={cn('text-foreground! group-hover:text-error!')}>Hapus</p>
-                                        <Trash className={cn('text-muted-foreground! group-hover:text-error!')} />
-                                    </DropdownMenuItem>
+                                    {currentRole === 'admin' && (
+                                        <DropdownMenuItem
+                                            // onClick={() => OpenModal(record?.transaksi_id)}
+                                            className={cn(
+                                                'group hover:bg-error/10! flex cursor-pointer items-center justify-between p-2 transition-all',
+                                            )}
+                                            onClick={() => OpenModal(record?.transaksi_id, 'delete')}
+                                        >
+                                            <p className={cn('text-foreground! group-hover:text-error!')}>Hapus</p>
+                                            <Trash className={cn('text-muted-foreground! group-hover:text-error!')} />
+                                        </DropdownMenuItem>
+                                    )}
                                 </div>
                             </>
                         }
