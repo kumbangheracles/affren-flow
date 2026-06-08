@@ -75,7 +75,8 @@ class ProyekTransaksiSeeder extends Seeder
                 'nama_klien'         => fake()->company(),
                 'status'             => $status,
                 'deskripsi_proyek'   => fake()->sentence(10),
-                'created_by' => 1
+                'created_by' => 1,
+
             ]);
 
             $this->buatTransaksiPengeluaran($proyek, (float) $pagu, $mulai);
@@ -176,6 +177,9 @@ class ProyekTransaksiSeeder extends Seeder
                     'persen'     => $this->hitungPersen($budget, $pagu),
                     'tanggal'    => $tanggal,
                     'keterangan' => "Biaya tetap {$kategori}",
+                    'created_by' => 1,
+                    'approved_by' => 1,
+                    'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
                 ]);
                 continue;
             }
@@ -188,6 +192,9 @@ class ProyekTransaksiSeeder extends Seeder
                     'persen'     => null,
                     'tanggal'    => $tanggal,
                     'keterangan' => "Transaksi {$kategori}",
+                    'created_by' => 1,
+                    'approved_by' => 1,
+                    'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
                 ]);
 
                 $totalItem = $this->buatItemTransaksi(
@@ -210,6 +217,9 @@ class ProyekTransaksiSeeder extends Seeder
                     'persen'     => $this->hitungPersen($budget, $pagu),
                     'tanggal'    => $tanggal,
                     'keterangan' => "Transaksi {$kategori}",
+                    'created_by' => 1,
+                    'approved_by' => 1,
+                    'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
                 ]);
             }
         }
@@ -268,6 +278,9 @@ class ProyekTransaksiSeeder extends Seeder
                 'harga_satuan' => $harga,
                 'subtotal'     => $subtotal,
                 'keterangan'   => "Item ke-{$j}",
+                'created_by' => 1,
+                'approved_by' => 1,
+                'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
             ]);
         }
 

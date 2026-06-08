@@ -1,5 +1,6 @@
 import { JenisProyek } from './jenis_proyek.type';
 import { KategoriProyek } from './kategori_proyek.type';
+import { UserProps } from './user.type';
 
 export interface ProyekProps {
     [key: string]: any;
@@ -25,6 +26,10 @@ export interface ProyekProps {
     biaya_staff_perpajakan: number;
     biaya_staff_entry_data: number;
     biaya_tak_terduga_persen: number;
+
+    created_by?: string | number;
+
+    creator?: UserProps;
 
     nama_klien: string;
 

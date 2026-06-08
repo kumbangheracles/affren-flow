@@ -22,6 +22,17 @@ class ItemTransaksi extends Model
         'harga_satuan',
         'subtotal',
         'keterangan',
+        'created_by',
+        'approved_by',
+        'status'
+    ];
+
+    const STATUS = [
+        'disetujui',
+        'belum_disetujui',
+        'ditolak',
+        'lunas'
+
     ];
 
     protected $casts = [
@@ -46,5 +57,15 @@ class ItemTransaksi extends Model
                 $model->item_id = (string) Str::ulid();
             }
         });
+    }
+
+    public function creatorItemTransaksi()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function approverItemTransaksi()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }

@@ -205,7 +205,7 @@ export default function Dashboard() {
     const { props } = usePage<PageProps>();
     const { summary, chartPemasukanBulanan, periodeOptions, chartCashflowBulanan, chartStatusProyek, chartTopProyek, selectedPeriode } = props;
     const [periode, setPeriode] = useState(String(selectedPeriode));
-    console.log('Props dashboard: ', props);
+    // console.log('Props dashboard: ', props);
 
     const slicedPemasukan = chartPemasukanBulanan;
 

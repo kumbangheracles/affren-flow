@@ -33,6 +33,9 @@ class TransaksiSeeder extends Seeder
                         'jumlah'       => 0, // akan diupdate setelah items dibuat
                         'tanggal'      => now()->subDays(rand(10, 60)),
                         'keterangan'   => "Transaksi {$kategori} - {$proyek->nama_proyek}",
+                        'created_by' => 1,
+                        'approved_by' => 1,
+                        'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
                     ]);
 
                     // Buat 2-4 item per transaksi
@@ -57,6 +60,9 @@ class TransaksiSeeder extends Seeder
                             'harga_satuan' => $hargaSatuan,
                             'subtotal'     => $subtotal,
                             'keterangan'   => "Item ke-{$i}",
+                            'created_by' => 1,
+                            'approved_by' => 1,
+                            'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
                         ]);
                     }
 
@@ -89,6 +95,9 @@ class TransaksiSeeder extends Seeder
                         'jumlah'       => $jumlah,
                         'tanggal'      => now()->subDays(rand(10, 60)),
                         'keterangan'   => "Transaksi {$kategori} - {$proyek->nama_proyek}",
+                        'created_by' => 1,
+                        'approved_by' => 1,
+                        'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
                     ]);
                 }
             }

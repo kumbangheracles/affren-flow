@@ -21,7 +21,7 @@ interface PropTypes extends Omit<ModalProps, 'children'> {
     item?: ItemForm;
     onChange?: (item: ItemForm) => void;
     kategori?: KategoriTransaksi;
-    type: 'update' | 'delete' | null;
+    type: 'update' | 'delete' | 'update_status' | null;
 }
 
 const ModalFormTransaksiItem = ({ open, item_id, item, kategori, onChange, transaksi_id, onCloseModal, onOpenChange, type }: PropTypes) => {

@@ -15,6 +15,7 @@ return new class extends Migration
             $table->ulid('transaksi_id')->primary();
             $table->foreignUlid('proyek_id')->constrained('proyek', 'proyek_id')->cascadeOnDelete();
             $table->enum('tipe', ['pemasukan', 'pengeluaran']);
+            $table->enum('status', ['belum_disetujui', 'disetujui', 'lunas', 'ditolak'])->default('belum_disetujui');
             $table->enum('kategori', [
                 'material',
                 'operasional',
@@ -24,6 +25,14 @@ return new class extends Migration
                 'staff_entry_data',
                 'biaya_tak_terduga',
             ]);
+
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete();
+            $table->foreignId('approved_by')
+                ->nullable()                    // ← null saat baru dibuat
+                ->constrained('users')
+                ->nullOnDelete();
             $table->decimal('jumlah', 15, 2);
             $table->decimal('persen', 5, 2)->nullable();
             $table->date('tanggal');

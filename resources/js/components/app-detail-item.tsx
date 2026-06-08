@@ -13,10 +13,6 @@ type DetailItemProps = {
     valueClassName?: string;
 };
 
-/**
- * Tone styles menggunakan CSS custom properties dari tema aktif.
- * Kompatibel dengan light mode (cool blue-white) maupun dark mode (void black + cyber cyan).
- */
 const toneStyles: Record<SelectTone, React.CSSProperties> = {
     default: {
         '--tone-bg': 'var(--muted)',

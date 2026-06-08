@@ -46,9 +46,7 @@ const TransactionCreateIndex = () => {
     ];
 
     const form = useForm<TransaksiProps>(initialTransaksi);
-    console.log('props: ', props);
     const { data, setData, post, processing, errors, put } = form;
-    console.log('data saat ini: ', data);
     const { loading: namaProyekLoading, search: searchNamaProyek } = useInertiaSearch({
         url: route('transaction.search-nama-proyek'),
         mapFn: (item) => ({ value: String(item.proyek_id), label: item.nama_proyek }),
@@ -118,9 +116,7 @@ const TransactionCreateIndex = () => {
 
     const handleSubmitTransaksi = async (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Data terkirim: ', data);
-        console.log('Items: ', data.items);
-        console.log('Jumlah items: ', data.items?.length);
+
         if (transaksiId !== null) {
             put(`/transaction/${transaksiId}`, {
                 preserveState: false,

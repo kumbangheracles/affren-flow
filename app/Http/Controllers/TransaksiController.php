@@ -30,7 +30,7 @@ class TransaksiController extends Controller
         $perPage = $request->query('per_page', 10);
 
         $transaksis = Transaksi::query()->latest()
-            ->with('proyek:proyek_id,nama_proyek,pagu_total,tanggal_mulai')
+            ->with('proyek:proyek_id,nama_proyek,pagu_total,tanggal_mulai')->with('creatorTransaksi.role', 'approverTransaksi.role')
             ->when($search, function ($q) use ($search) {
                 // search berdasarkan nama proyek
                 $q->whereHas('proyek', function ($q) use ($search) {
@@ -178,6 +178,8 @@ class TransaksiController extends Controller
             'persen'     => round($persen, 2),
             'jumlah'     => $jumlah,
             'keterangan'   => $validated['keterangan'] ?? null,
+            'created_by' => $request->user()->id,
+            // 'approved_by' => $request->approved_by
         ]);
         if (in_array($validated['kategori'], Transaksi::KATEGORI_DENGAN_ITEM)) {
             foreach ($validated['items'] as $item) {
@@ -190,6 +192,8 @@ class TransaksiController extends Controller
                     'harga_satuan' => $item['harga_satuan'],
                     'subtotal'     => $item['qty'] * $item['harga_satuan'],
                     'keterangan'   => $item['keterangan'] ?? null,
+                    'created_by' => $request->user()->id,
+                    // 'approved_by' => $request->approved_by
                 ]);
             }
         }
@@ -203,7 +207,7 @@ class TransaksiController extends Controller
      */
     public function show($transaksi_id)
     {
-        $transaksi = Transaksi::with(['proyek', 'items'])
+        $transaksi = Transaksi::with(['proyek', 'items'])->with('creatorTransaksi.role', 'approverTransaksi.role')->with('items.creatorItemTransaksi.role', 'items.approverItemTransaksi.role')
             ->findOrFail($transaksi_id);
         $anggaran  = $this->financeService->hitungAnggaranProyek($transaksi->proyek);
 
@@ -258,6 +262,12 @@ class TransaksiController extends Controller
                 Rule::unique('transaksi')
                     ->where('proyek_id', $request->proyek_id)
                     ->ignore($transaksi->transaksi_id, 'transaksi_id'),
+            ],
+
+            'status' => [
+                'required',
+                'string',
+                Rule::in(Transaksi::STATUS),
             ],
 
             // Validasi items untuk kategori dengan item
@@ -321,6 +331,9 @@ class TransaksiController extends Controller
             'persen'     => round($persen, 2),
             'jumlah'     => $jumlah,
             'keterangan' => $validated['keterangan'] ?? null,
+            // 'status' => $validated['status'] ??= 'belum_disetujui',
+            // 'created_by' => $request->user()->id,
+            // 'approved_by' => null
         ]);
 
         if (in_array($validated['kategori'], Transaksi::KATEGORI_DENGAN_ITEM)) {
@@ -338,6 +351,9 @@ class TransaksiController extends Controller
                     'harga_satuan' => $item['harga_satuan'],
                     'subtotal'     => $item['qty'] * $item['harga_satuan'],
                     'keterangan'   => $item['keterangan'] ?? null,
+                    // 'status'   => $item['status'] ?? null,
+                    'created_by' => $request->created_by,
+                    // 'approved_by' => null
                 ]);
             }
         }
@@ -346,7 +362,44 @@ class TransaksiController extends Controller
             ->route('transaction.index')
             ->with('success', 'Transaksi berhasil diperbarui.');
     }
+    public function updateStatus(Request $request, Transaksi $transaksi)
+    {
 
+
+        if ($request->user()->role_id !== 1) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hanya admin yang bisa akses ini.',
+            ], 403);
+        }
+        $validated = $request->validate([
+            'status' => [
+                'required',
+                'string',
+                Rule::in(Transaksi::STATUS),
+            ],
+        ], [
+            'status.required' => 'Status wajib diisi.',
+            'status.in'       => 'Status tidak valid.',
+        ]);
+
+        if ($transaksi->status === 'lunas') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaksi yang sudah lunas tidak dapat diubah.',
+            ], 422);
+        }
+
+        $transaksi->update([
+            'status'      => $validated['status'],
+            'approved_by' => $request->user()->id,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Status transaksi berhasil diperbarui.',
+        ]);
+    }
     /**
      * Remove the specified resource from storage.
      */

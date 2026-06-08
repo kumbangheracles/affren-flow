@@ -66,4 +66,21 @@ class User extends Authenticatable
     {
         return $this->hasMany(Proyek::class, 'created_by');
     }
+
+    public function creatorTransaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'created_by');
+    }
+    public function approverTransaksi()
+    {
+        return $this->hasMany(Transaksi::class, 'approved_by');
+    }
+    public function creatorItemTransaksi()
+    {
+        return $this->hasMany(ItemTransaksi::class, 'created_by');
+    }
+    public function approverItemTransaksi()
+    {
+        return $this->hasMany(ItemTransaksi::class, 'approved_by');
+    }
 }

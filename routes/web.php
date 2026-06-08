@@ -10,9 +10,7 @@ use App\Http\Controllers\JenisProyekController;
 use App\Http\Controllers\ForecastController;
 use App\Http\Controllers\DashboardController;
 
-Route::get('/', function () {
-    return Inertia::render('welcome');
-})->name('home');
+
 
 Route::middleware(['auth'])->group(function () {
 
@@ -42,6 +40,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/transaction/{id}/edit', [TransaksiController::class, 'edit'])->name('transaction.edit');
     Route::put('/transaction/{transaksi}', [TransaksiController::class, 'update'])
         ->name('transaction.update');
+    Route::patch('/transaction/{transaksi}/status', [TransaksiController::class, 'updateStatus'])
+        ->name('transaction.updateStatus');
     Route::get('/transaction/{id}/detail', [TransaksiController::class, 'show'])->name('transaction.show');
     Route::delete('/transaction/{id}', [TransaksiController::class, 'destroy'])->name('transaction.destroy');
 
@@ -50,6 +50,7 @@ Route::middleware(['auth'])->group(function () {
         Route::get('/',             [ItemTransaksiController::class, 'index'])->name('index');
         Route::post('/',            [ItemTransaksiController::class, 'store'])->name('store');
         Route::put('/{item_id}',    [ItemTransaksiController::class, 'update'])->name('update');
+        Route::patch('/{item_id}/status',    [ItemTransaksiController::class, 'updateStatus'])->name('updateStatus');
         Route::delete('/{item_id}', [ItemTransaksiController::class, 'destroy'])->name('destroy');
     });
 

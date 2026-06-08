@@ -22,6 +22,8 @@ export type SelectOptions = SelectOption[] | SelectOptionGroup[];
 
 export type SelectTone = 'default' | 'error' | 'warning' | 'success' | 'info';
 
+export type SelectSize = 'sm' | 'md' | 'lg' | 'responsive';
+
 function isGrouped(options: SelectOptions): options is SelectOptionGroup[] {
     return options.length > 0 && 'group' in options[0];
 }
@@ -38,7 +40,6 @@ const toneStyles: Record<SelectTone, React.CSSProperties> = {
         '--tone-hint': 'var(--muted-foreground)',
     } as React.CSSProperties,
 
-    //-color-error: #e76f51 (light) / #e76f51 (dark — sama)
     error: {
         '--tone-bg': 'color-mix(in srgb, var(--color-error) 12%, var(--background))',
         '--tone-border': 'var(--color-error)',
@@ -50,7 +51,6 @@ const toneStyles: Record<SelectTone, React.CSSProperties> = {
         '--tone-hint': 'color-mix(in srgb, var(--color-error) 65%, var(--foreground))',
     } as React.CSSProperties,
 
-    // color-warning: #f4a261 (light) / #f4a261 (dark)
     warning: {
         '--tone-bg': 'color-mix(in srgb, var(--color-warning) 12%, var(--background))',
         '--tone-border': 'var(--color-warning)',
@@ -62,7 +62,6 @@ const toneStyles: Record<SelectTone, React.CSSProperties> = {
         '--tone-hint': 'color-mix(in srgb, var(--color-warning) 65%, var(--foreground))',
     } as React.CSSProperties,
 
-    // color-success: #52b788 (light) / #52b788 dark: chart-2 #52b788 — pakai color-success konsisten
     success: {
         '--tone-bg': 'color-mix(in srgb, var(--color-success) 15%, var(--background))',
         '--tone-border': 'var(--color-success)',
@@ -74,7 +73,6 @@ const toneStyles: Record<SelectTone, React.CSSProperties> = {
         '--tone-hint': 'color-mix(in srgb, var(--color-success) 65%, var(--foreground))',
     } as React.CSSProperties,
 
-    // color-info: #2a9d8f (light) / #3bbfb0 (dark)
     info: {
         '--tone-bg': 'color-mix(in srgb, var(--color-info) 12%, var(--background))',
         '--tone-border': 'var(--color-info)',
@@ -87,7 +85,37 @@ const toneStyles: Record<SelectTone, React.CSSProperties> = {
     } as React.CSSProperties,
 };
 
-// Icon components for each tone (rendered alongside hint/message)
+/**
+ * Trigger height + font-size per size variant.
+ * `responsive` is the default: sm on mobile, md on sm breakpoint and above.
+ */
+const sizeStyles: Record<SelectSize, string> = {
+    sm: 'h-8 text-[10px]',
+    md: 'h-10 text-sm',
+    lg: 'h-12 text-base',
+    responsive: 'h-8 text-[10px] sm:h-10 sm:text-sm',
+};
+
+/**
+ * SelectItem font-size per size variant (mirrors trigger).
+ */
+const itemSizeStyles: Record<SelectSize, string> = {
+    sm: 'text-[10px]',
+    md: 'text-sm',
+    lg: 'text-base',
+    responsive: 'text-[10px] sm:text-sm',
+};
+
+/**
+ * SelectLabel font-size per size variant.
+ */
+const labelSizeStyles: Record<SelectSize, string> = {
+    sm: 'text-[10px]',
+    md: 'text-sm',
+    lg: 'text-base',
+    responsive: 'text-[10px] sm:text-sm',
+};
+
 const ToneIcon: React.FC<{ tone: SelectTone }> = ({ tone }) => {
     if (tone === 'default') return null;
 
@@ -139,6 +167,11 @@ interface AppSelectProps extends React.ComponentPropsWithoutRef<typeof SelectPri
     triggerClassName?: string;
     /** Visual tone of the select field. Defaults to "default". */
     tone?: SelectTone;
+    /**
+     * Controls trigger height and font-size.
+     * Defaults to "responsive" (h-8/text-[10px] on mobile → h-10/text-sm on sm+).
+     */
+    size?: SelectSize;
 }
 
 const AppSelect = ({
@@ -153,6 +186,7 @@ const AppSelect = ({
     disabled,
     emptyMsg = 'Tidak ada opsi saat ini',
     tone: toneProp = 'default',
+    size = 'responsive',
     ...props
 }: AppSelectProps) => {
     // Legacy `error` prop overrides tone
@@ -162,12 +196,17 @@ const AppSelect = ({
     const id = label?.toLowerCase().replace(/\s+/g, '-');
 
     return (
-        <div className="flex flex-col gap-1.5" style={toneStyles[tone]}>
+        <div className="flex flex-col gap-1 sm:gap-1.5" style={toneStyles[tone]}>
+            {/* ── Label row ── */}
             <div className="flex items-center gap-2">
                 {label && (
                     <Label
                         htmlFor={id}
-                        className={cn('ml-0.5 text-sm font-medium transition-colors', disabled && 'opacity-50')}
+                        className={cn(
+                            'ml-0.5 font-medium transition-colors',
+                            'text-xs sm:text-sm', // responsive label size
+                            disabled && 'opacity-50',
+                        )}
                         style={{ color: 'var(--tone-label)' }}
                     >
                         {label}
@@ -179,27 +218,28 @@ const AppSelect = ({
                     </Label>
                 )}
                 {tooltip && (
-                    <>
-                        <Tooltip>
-                            <TooltipTrigger asChild>
-                                <div className="animate-bounce cursor-pointer rounded-full">
-                                    <Info size={17} />
-                                </div>
-                            </TooltipTrigger>
-                            <TooltipContent>
-                                <p>{tooltip}</p>
-                            </TooltipContent>
-                        </Tooltip>
-                    </>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <div className="animate-bounce cursor-pointer rounded-full">
+                                <Info size={15} className="sm:size-[17px]" />
+                            </div>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>{tooltip}</p>
+                        </TooltipContent>
+                    </Tooltip>
                 )}
             </div>
+
+            {/* ── Trigger ── */}
             <Select disabled={disabled} required={required} {...props}>
                 <SelectTrigger
                     id={id}
                     className={cn(
                         'border font-semibold transition-all duration-200',
                         'focus:ring-0 focus:outline-none',
-                        'cursor-pointer text-[10px] sm:text-sm',
+                        'cursor-pointer',
+                        sizeStyles[size], // ← centralised size
                         triggerClassName,
                     )}
                     style={
@@ -213,19 +253,29 @@ const AppSelect = ({
                     data-tone={tone}
                 >
                     <SelectValue
-                        className="text-[10px] font-semibold sm:text-sm [&>span]:text-[color:var(--tone-placeholder)]"
+                        className={cn(
+                            'font-semibold [&>span]:text-[color:var(--tone-placeholder)]',
+                            itemSizeStyles[size], // ← placeholder text size matches trigger
+                        )}
                         placeholder={placeholder}
                     />
                 </SelectTrigger>
 
+                {/* ── Options ── */}
                 {options.length > 0 && (
                     <SelectContent className="max-h-[300px]">
                         {isGrouped(options)
                             ? options.map((group) => (
                                   <SelectGroup key={group.group}>
-                                      <SelectLabel className="text-[10px] sm:text-sm">{group.group}</SelectLabel>
+                                      <SelectLabel className={cn(labelSizeStyles[size])}>{group.group}</SelectLabel>
                                       {group.options.map((opt) => (
-                                          <SelectItem style={toneStyles[tone]} key={opt.value} value={opt.value} disabled={opt.disabled}>
+                                          <SelectItem
+                                              style={toneStyles[tone]}
+                                              className={cn('cursor-pointer font-semibold', itemSizeStyles[size])}
+                                              key={opt.value}
+                                              value={opt.value}
+                                              disabled={opt.disabled}
+                                          >
                                               {opt.label}
                                           </SelectItem>
                                       ))}
@@ -234,7 +284,7 @@ const AppSelect = ({
                             : (options as SelectOption[]).map((opt) => (
                                   <SelectItem
                                       style={toneStyles[tone]}
-                                      className="cursor-pointer text-[10px] font-semibold sm:text-sm"
+                                      className={cn('cursor-pointer font-semibold', itemSizeStyles[size])}
                                       key={opt.value}
                                       value={opt.value}
                                       disabled={opt.disabled}
@@ -244,6 +294,8 @@ const AppSelect = ({
                               ))}
                     </SelectContent>
                 )}
+
+                {/* ── Empty state ── */}
                 {options.length === 0 && (
                     <SelectContent>
                         <div className="flex flex-col items-center justify-center gap-3 p-4 text-[10px]">
@@ -254,8 +306,9 @@ const AppSelect = ({
                 )}
             </Select>
 
+            {/* ── Hint / error message ── */}
             {message && (
-                <p className="ml-0.5 flex items-center gap-1 text-xs" style={{ color: 'var(--tone-hint)' }}>
+                <p className="ml-0.5 flex items-center gap-1 text-[10px] sm:text-xs" style={{ color: 'var(--tone-hint)' }}>
                     <ToneIcon tone={tone} />
                     {message}
                 </p>

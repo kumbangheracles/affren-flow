@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use App\Models\ItemTransaksi;
 use App\Services\FinanceService;
 use Illuminate\Http\JsonResponse;
-
+use Illuminate\Validation\Rule;
 
 class ItemTransaksiController extends Controller
 {
@@ -81,6 +81,7 @@ class ItemTransaksiController extends Controller
     public function update(Request $request, $transaksi_id, $item_id): JsonResponse|RedirectResponse
     {
         $transaksi = Transaksi::findOrFail($transaksi_id);
+        $this->pastikanKategoriPunyaItem($transaksi);
         $item      = ItemTransaksi::findOrFail($item_id);
 
         $validated = $request->validate([
@@ -103,9 +104,43 @@ class ItemTransaksiController extends Controller
         ]);
 
         $this->recalculateJumlah($transaksi);
-        $transaksi->load('proyek'); // pastikan relasi proyek ter-load
+        $transaksi->load('proyek');
         $this->recalculatePersen($transaksi);
         return response()->json(['message' => 'Berhasil diperbarui'], 200);
+    }
+
+    public function updateStatus(Request $request, $transaksi_id, $item_id,)
+    {
+
+        $transaksi = Transaksi::findOrFail($transaksi_id);
+        $item      = ItemTransaksi::findOrFail($item_id);
+        $validated = $request->validate([
+            'status' => [
+                'required',
+                'string',
+                Rule::in(ItemTransaksi::STATUS),
+            ],
+        ], [
+            'status.required' => 'Status wajib diisi.',
+            'status.in'       => 'Status tidak valid.',
+        ]);
+
+        if ($item->status === 'lunas') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaksi yang sudah lunas tidak dapat diubah.',
+            ], 422);
+        }
+
+        $item->update([
+            'status'      => $validated['status'],
+            'approved_by' => $request->user()->id,
+        ]);
+        $transaksi->load('proyek');
+        return response()->json([
+            'success' => true,
+            'message' => 'Status item transaksi berhasil diperbarui.',
+        ]);
     }
 
     /**

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use App\Models\ItemTransaksi;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use App\Models\User;
 
 class Transaksi extends Model
 {
@@ -24,6 +25,9 @@ class Transaksi extends Model
         'tanggal',
         'persen',
         'keterangan',
+        'status',
+        'created_by',
+        'approved_by'
     ];
 
     protected $casts = [
@@ -56,6 +60,13 @@ class Transaksi extends Model
         'staff_perpajakan',
         'staff_entry_data',
         'biaya_tak_terduga',
+    ];
+    const STATUS = [
+        'disetujui',
+        'belum_disetujui',
+        'ditolak',
+        'lunas'
+
     ];
 
     // Relasi ke proyek
@@ -96,5 +107,15 @@ class Transaksi extends Model
     public function items(): HasMany
     {
         return $this->hasMany(ItemTransaksi::class, 'transaksi_id', 'transaksi_id');
+    }
+
+    public function creatorTransaksi()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function approverTransaksi()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
     }
 }

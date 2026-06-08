@@ -160,6 +160,12 @@ const ProjectDetailIndex = () => {
                         />
                         <DetailItem
                             labelClassName=" text-[10px] sm:text-sm"
+                            valueClassName="text-[10px] sm:text-sm rounded-xl! px-2 bg-foreground text-background font-semibold!"
+                            label="Dibuat oleh"
+                            value={proyek?.creator?.name || '-'}
+                        />
+                        <DetailItem
+                            labelClassName=" text-[10px] sm:text-sm"
                             valueClassName=" text-[10px] sm:text-sm"
                             label="Pagu Total"
                             value={formatCurrency(proyek?.pagu_total)}

@@ -1,4 +1,5 @@
 import { ProyekProps } from './project.type';
+import { UserProps } from './user.type';
 
 export type TipeTransaksi = 'pemasukan' | 'pengeluaran';
 
@@ -28,6 +29,14 @@ export interface TransaksiProps {
     keterangan?: string | null;
 
     proyek?: ProyekProps;
+
+    created_by?: string | number;
+
+    creator_transaksi?: UserProps;
+
+    approver_transaksi?: UserProps;
+
+    status?: 'disetujui' | 'belum_disetujui' | 'lunas' | 'ditolak' | null;
 
     items?: TransaksiItem[];
 
@@ -59,6 +68,14 @@ export interface TransaksiItem {
     nama_item: string;
     satuan: string;
     qty: string;
+
+    creator_item_transaksi?: UserProps;
+    approver_item_transaksi?: UserProps;
+    created_by?: string | number;
+    approved_by?: string | number;
+
+    status?: 'disetujui' | 'belum_disetujui' | 'lunas' | 'ditolak';
+
     harga_satuan: string;
     subtotal: string;
     keterangan: string;

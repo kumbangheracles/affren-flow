@@ -17,6 +17,14 @@ return new class extends Migration
                 ->constrained('transaksi', 'transaksi_id')
                 ->cascadeOnDelete();
             $table->date('tanggal');
+            $table->foreignId('created_by')
+                ->constrained('users')
+                ->cascadeOnDelete();
+            $table->enum('status', ['belum_disetujui', 'disetujui', 'lunas', 'ditolak'])->default('belum_disetujui');
+            $table->foreignId('approved_by')
+                ->nullable()                    // ← null saat baru dibuat
+                ->constrained('users')
+                ->nullOnDelete();
             $table->string('nama_item');           // nama barang / kegiatan / kejadian
             $table->string('satuan')->nullable();  // kg, m3, unit — null untuk operasional
             $table->decimal('qty', 10, 2);

@@ -1,18 +1,25 @@
 import DetailItem from '@/components/app-detail-item';
+import AppSelect from '@/components/app-select';
+import { Badge } from '@/components/ui-shadcn/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-shadcn/card';
+import { ModalBody, ModalContent, ModalHeader } from '@/components/ui-shadcn/modal';
 import { Button } from '@/components/ui/button';
+import { Modal, ModalClose, ModalFooter } from '@/components/ui/modal';
 import { formatCurrency, formatDate, formatPercent } from '@/helpers/format';
 import { useCountUp } from '@/hooks/use-count';
 import { useMounted } from '@/hooks/use-mounted';
+import useRole from '@/hooks/use-role';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
 import { AnggaranProps } from '@/types/anggaran.type';
-import { KategoriTransaksi, TransaksiItem, TransaksiProps } from '@/types/transaction.type';
+import { initialTransaksi, KategoriTransaksi, TransaksiItem, TransaksiProps } from '@/types/transaction.type';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
-import { Head, router, usePage } from '@inertiajs/react';
+import { Head, router, useForm, usePage } from '@inertiajs/react';
+import axios from 'axios';
 import { ArrowLeft, Receipt } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import DetailItemTransaksiContent from './assets/components/DetailItemTransaksiContent';
 import ModalFormTransaksiItem from './assets/components/ModalFormTransaksiItem';
 
@@ -26,22 +33,55 @@ const TransactionDetailIndex = () => {
     const transaksi = props?.transaksi;
     const anggaran = props?.anggaran;
 
-    const transaksid = props?.transaksi_id ?? null;
     const [isOpenEdit, setIsOpenEdit] = useState<boolean>(false);
-    const [modalType, setModalType] = useState<'update' | 'delete' | null>(null);
+    const [modalType, setModalType] = useState<'update' | 'delete' | 'update_status' | null>(null);
     const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [isStatus, setIsStatus] = useState<TransaksiProps['status'] | null>(null);
     const [selectedDataItem, setSelectedDataItem] = useState<TransaksiItem | null>(null);
+    const { currentRole } = useRole();
+    const form = useForm<TransaksiProps>(initialTransaksi);
+    const { setData, processing } = form;
+    const handleSubmitTransaksi = async (e: React.FormEvent) => {
+        e.preventDefault();
+
+        if (!transaksi?.transaksi_id || !isStatus) {
+            toast.error('Data transaksi tidak valid.');
+            return;
+        }
+
+        try {
+            const res = await axios.patch(`/transaction/${transaksi.transaksi_id}/status`, {
+                status: isStatus,
+            });
+
+            toast.success(res.data.message);
+            router.reload();
+            setIsStatus(null);
+        } catch (error) {
+            console.log('error: ', error);
+            toast.error('Gagal memperbarui status transaksi.');
+        } finally {
+            setIsStatus(null);
+        }
+    };
+
+    useEffect(() => {
+        setData('status', isStatus);
+    }, [isStatus]);
+
     // console.log('props: ', props);
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Detail Transaksi',
-            href: `/transaction/${transaksid}/detail`,
+            href: `/transaction/${transaksi?.transaksi_id}/detail`,
         },
     ];
+
+    // console.log('Transaksi Id: ', transaksi?.transaksi_id);
     const mounted = useMounted();
     const animatedJumlah = useCountUp(transaksi?.jumlah as number, 1000, mounted);
 
-    const handleOpenModal = (key: string | null, type: 'update' | 'delete' | null) => {
+    const handleOpenModal = (key: string | null, type: 'update' | 'delete' | 'update_status' | null) => {
         setSelectedId(key);
         setIsOpenEdit(true);
         setModalType(type);
@@ -51,11 +91,16 @@ const TransactionDetailIndex = () => {
         setIsOpenEdit(false);
         setSelectedDataItem(null);
         setModalType(null);
+        setIsStatus(null);
+    };
+
+    const handleChangeStatus = (value: TransaksiProps['status'] | null) => {
+        setIsStatus(value);
     };
 
     useEffect(() => {
         const selectedData = transaksi?.items?.find((item) => item?.item_id === selectedId) ?? null;
-        console.log('Transaksiid: ', transaksid);
+        // console.log('Transaksiid: ', transaksid);
         setSelectedDataItem(selectedData as TransaksiItem);
     }, [selectedId]);
 
@@ -81,11 +126,78 @@ const TransactionDetailIndex = () => {
 
             <Card className="border-border bg-card m-4 shadow-sm">
                 <CardHeader className="border-border border-b pb-3">
-                    <div className="flex items-center gap-3">
-                        <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-md">
-                            <Receipt className="text-primary h-4 w-4" />
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <div className="bg-primary/10 flex h-8 w-8 items-center justify-center rounded-md">
+                                <Receipt className="text-primary h-4 w-4" />
+                            </div>
+                            <CardTitle className="text-card-foreground text-sm font-bold sm:text-base">Rincian Transaksi</CardTitle>
                         </div>
-                        <CardTitle className="text-card-foreground text-sm font-bold sm:text-base">Rincian Transaksi</CardTitle>
+
+                        {currentRole === 'admin' &&
+                            transaksi?.kategori !== 'biaya_tak_terduga' &&
+                            transaksi?.kategori !== 'operasional' &&
+                            transaksi?.kategori !== 'material' && (
+                                <>
+                                    {transaksi?.status !== 'lunas' && (
+                                        <AppSelect
+                                            value={transaksi?.status as TransaksiProps['']}
+                                            options={[
+                                                { label: 'Setujui', value: 'disetujui' },
+                                                { label: 'Belum Disetujui', value: 'belum_disetujui' },
+                                                { label: 'Tolak', value: 'ditolak' },
+                                                { label: 'Lunas', value: 'lunas' },
+                                            ]}
+                                            onValueChange={(value) => handleChangeStatus(value as unknown as TransaksiProps['status'])}
+                                            disabled={processing}
+                                        />
+                                    )}
+                                    {transaksi?.status === 'lunas' && <Badge>{transaksi?.status.toUpperCase()}</Badge>}
+
+                                    <Modal open={isStatus !== null}>
+                                        <ModalContent size="xl">
+                                            <ModalHeader className="font-semibold">
+                                                Update Status {transaksi?.kategori.replace('_', ' ').toUpperCase()} {transaksi?.proyek?.nama_proyek}
+                                            </ModalHeader>
+                                            <ModalBody>
+                                                <p className="w-full text-center text-sm tracking-wide">
+                                                    {isStatus === 'lunas' && (
+                                                        <>
+                                                            Anda yakin ingin mengupdate status transaksi{' '}
+                                                            {transaksi?.kategori.replace('_', ' ').toUpperCase()} ini menjadi Lunas?, setelah ini
+                                                            status tidak dapat di ubah lagi !!.
+                                                        </>
+                                                    )}
+
+                                                    {isStatus !== 'lunas' && (
+                                                        <>
+                                                            {' '}
+                                                            Anda yakin ingin mengupdate status transaksi{' '}
+                                                            {transaksi?.kategori.replace('_', ' ').toUpperCase()} ini ?
+                                                        </>
+                                                    )}
+                                                </p>
+                                            </ModalBody>
+                                            <ModalFooter>
+                                                <ModalClose>
+                                                    <Button variant={'outline'} onClick={() => setIsStatus(null)}>
+                                                        Batal
+                                                    </Button>
+                                                </ModalClose>
+                                                <Button variant={'default'} onClick={handleSubmitTransaksi}>
+                                                    Konfirmasi
+                                                </Button>
+                                            </ModalFooter>
+                                        </ModalContent>
+                                    </Modal>
+                                </>
+                            )}
+
+                        {currentRole === 'mandor' &&
+                            transaksi?.kategori !== 'biaya_tak_terduga' &&
+                            transaksi?.kategori !== 'operasional' &&
+                            transaksi?.kategori !== 'material' &&
+                            (transaksi?.items?.filter((item) => item.status !== 'lunas').length as number) > 0 && <Badge>{transaksi?.status}</Badge>}
                     </div>
                 </CardHeader>
                 <CardContent className="space-y-0">
@@ -123,6 +235,7 @@ const TransactionDetailIndex = () => {
                                             : '-'
                         }
                     />
+
                     <DetailItem
                         labelClassName=" text-[10px] sm:text-sm"
                         valueClassName=" text-[10px] sm:text-sm"
@@ -132,8 +245,38 @@ const TransactionDetailIndex = () => {
                     {/* <DetailItem
                         labelClassName=" text-[10px] sm:text-sm"
                         valueClassName=" text-[10px] sm:text-sm"
+                        label="Status"
+                        isStatus={true}
+                        toneStatus={
+                            transaksi?.status === 'ditolak'
+                                ? 'error'
+                                : transaksi?.status === 'belum_disetujui'
+                                  ? 'warning'
+                                  : transaksi?.status === 'disetujui'
+                                    ? 'info'
+                                    : transaksi?.status === 'lunas'
+                                      ? 'success'
+                                      : 'default'
+                        }
+                        value={transaksi?.status?.toUpperCase()}
+                    /> */}
+                    {/* <DetailItem
+                        labelClassName=" text-[10px] sm:text-sm"
+                        valueClassName=" text-[10px] sm:text-sm"
                         label="Jumlah Total (IDR)"
                         value={formatCurrency(transaksi?.jumlah)}
+                    /> */}
+                    <DetailItem
+                        labelClassName=" text-[10px] sm:text-sm"
+                        valueClassName="text-[10px] sm:text-sm rounded-xl! px-2 bg-foreground text-background font-semibold!"
+                        label="Dibuat oleh"
+                        value={transaksi?.creator_transaksi?.name || '-'}
+                    />
+                    {/* <DetailItem
+                        labelClassName=" text-[10px] sm:text-sm"
+                        valueClassName="text-[10px] sm:text-sm rounded-xl! px-2 bg-foreground text-background font-semibold!"
+                        label="Disetujui Oleh"
+                        value={transaksi?.approver_transaksi?.name || '-'}
                     /> */}
                     <DetailItem
                         labelClassName=" text-[10px] sm:text-sm"
@@ -156,6 +299,7 @@ const TransactionDetailIndex = () => {
                 </CardContent>
             </Card>
             <DetailItemTransaksiContent
+                transaksiId={transaksi?.transaksi_id}
                 openModal={handleOpenModal}
                 transaksiValue={transaksi}
                 title={

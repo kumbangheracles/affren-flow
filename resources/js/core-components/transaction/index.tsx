@@ -47,6 +47,9 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const form = useForm();
     // const { processing } = form;
+
+    console.log('list transaksi: ', list_transaksi);
+
     const isMobile = useIsMobile();
     useEffect(() => {
         const findedDataTransaksi = list_transaksi?.data?.find((item) => item.transaksi_id === selectedTransaksiId);
@@ -137,6 +140,12 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
             render: (_: any, record: TransaksiProps) => <span className="text-muted-foreground text-sm">{record?.proyek?.nama_proyek || '-'}</span>,
         },
         // {
+        //     key: 'status',
+        //     className: 'text-start  truncate max-w-[200px]',
+        //     label: 'Nama Proyek',
+        //     render: (_: any, record: TransaksiProps) => <span className="text-muted-foreground text-sm">{record?.status || '-'}</span>,
+        // },
+        // {
         //     key: 'tipe',
         //     label: 'Tipe',
         //     sortable: true,
@@ -179,7 +188,7 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
             key: 'jumlah',
             label: 'Jumlah',
             sortable: true,
-            render: (value, record: TransaksiProps) => {
+            render: (value) => {
                 return (
                     <span className={cn('font-semibold', 'text-blue-500')}>
                         {new Intl.NumberFormat('id-ID', {
@@ -195,9 +204,19 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
             key: 'persen',
             label: 'Persen',
             sortable: true,
-            render: (value, record: TransaksiProps) => {
+            render: (value) => {
                 return <span className={cn('font-semibold')}>{value === null ? '-' : ((value + ' %') as string)} </span>;
             },
+        },
+        {
+            key: 'created_by',
+            label: 'Dibuat oleh',
+            className: 'text-left',
+            render: (_: any, row: TransaksiProps) => (
+                <span className="text-background bg-foreground rounded-xl px-1 py-1 text-sm font-semibold">
+                    {row?.creator_transaksi?.name || '-'}
+                </span>
+            ),
         },
         {
             key: 'tanggal',
