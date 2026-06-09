@@ -289,7 +289,7 @@ const ProjectConfigTypeIndex = () => {
                 </div>
                 <DataTable
                     className="mt-4"
-                    emptyMessage="Tidak ada proyek saat ini"
+                    emptyMessage="Tidak ada jenis proyek saat ini"
                     data={list_jenis?.data as JenisProyek[]}
                     columns={LIST_TYPE_COLUMNS}
                     key={list_jenis?.data?.length}

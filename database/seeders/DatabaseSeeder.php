@@ -29,6 +29,7 @@ class DatabaseSeeder extends Seeder
             'nama_lengkap' => 'Ahmad Herkal Taqyudin',
             'email' => 'herkal@admin.com',
             'password' => bcrypt('herkal123'),
+
             'isActive' => true,
             'role_id' => Role::where('role_name', 'Admin')->value('id'),
         ]);
@@ -38,6 +39,30 @@ class DatabaseSeeder extends Seeder
             'nama_lengkap' => 'Ahmad Herkal Taqyudin',
             'email' => 'herkal@mandor.com',
             'password' => bcrypt('herkal123'),
+            'isActive' => true,
+            'role_id' => Role::where('role_name', 'Mandor')->value('id'),
+        ]);
+        User::factory()->create([
+            'name' => 'jamaladmin',
+            'nama_lengkap' => 'Jamal bin Jamal',
+            'email' => 'jamal@admin.com',
+            'password' => bcrypt('jamal123'),
+            'isActive' => true,
+            'role_id' => Role::where('role_name', 'admin')->value('id'),
+        ]);
+        User::factory()->create([
+            'name' => 'wahyumandor',
+            'nama_lengkap' => 'Wahyu wahyudi',
+            'email' => 'wahyu@mandor.com',
+            'password' => bcrypt('wahyu123'),
+            'isActive' => true,
+            'role_id' => Role::where('role_name', 'Mandor')->value('id'),
+        ]);
+        User::factory()->create([
+            'name' => 'donimandor',
+            'nama_lengkap' => 'Doni Mandor',
+            'email' => 'doni@mandor.com',
+            'password' => bcrypt('doni123'),
             'isActive' => true,
             'role_id' => Role::where('role_name', 'Mandor')->value('id'),
         ]);

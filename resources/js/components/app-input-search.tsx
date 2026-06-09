@@ -24,6 +24,7 @@ const AppSearchInput = React.forwardRef<HTMLInputElement, AppSearchInputProps>(
                 <input
                     ref={ref}
                     type="text"
+                    autoComplete="off"
                     value={value}
                     onChange={onChange}
                     className={cn(

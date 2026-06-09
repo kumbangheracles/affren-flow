@@ -18,6 +18,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'isActive',
+        'noHp'
         // 'created_by'
         // 'photo_url', // nanti untuk cloudinary
     ];

@@ -13,7 +13,8 @@ export interface UserProps {
     nama_lengkap: string;
     email: string;
     email_verified_at: string | null;
-    // password?: string;
+    password?: string;
+    noHp?: string;
     role_id: number;
     created_by?: string;
     creator?: UserProps;
@@ -31,6 +32,8 @@ export const initialUserProps: UserProps = {
     nama_lengkap: '',
     name: '',
     isActive: false,
+    password: '',
+    noHp: '',
     email: '',
     email_verified_at: null,
     role_id: 0,

@@ -22,7 +22,7 @@ class UserController extends Controller
         $users = User::query()
             ->with('role')
             ->when($search, fn($q) => $q->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%"))
+                ->orWhere('email', 'like', "%{$search}%")->orWhere('nama_lengkap', 'like', "%{$search}%"))
             ->latest()
             ->paginate($perPage)
             ->withQueryString();
@@ -131,7 +131,7 @@ class UserController extends Controller
         return back()->with('success', 'User berhasil diperbarui.');
     }
 
-    public function destroy(User $user): RedirectResponse
+    public function destroy($id): RedirectResponse
     {
         // Hapus foto di Cloudinary jika ada
         // if ($user->photo_url) {
@@ -141,6 +141,8 @@ class UserController extends Controller
         //     );
         //     Cloudinary::destroy("users/{$publicId}");
         // }
+
+        $user = User::findOrFail($id);
 
         $user->delete();
 
