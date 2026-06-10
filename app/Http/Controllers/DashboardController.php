@@ -51,7 +51,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    private function generatePeriodeOptions(int $perPeriode = 6, int $maxOpsi = 5): array
+    private function generatePeriodeOptions(int $perPeriode = 3, int $maxOpsi = 5): array
     {
         $bulanTertua = Transaksi::query()
             ->selectRaw("DATE_FORMAT(tanggal, '%Y-%m-01') as bulan")

@@ -19,9 +19,9 @@ Route::middleware(['auth'])->group(function () {
     // Project =====================
     Route::get('/project', [ProyekController::class, 'index'])->name('project.index');
     Route::get('/project/{id}/detail', [ProyekController::class, 'show'])->name('project.detail');
-    Route::get('/project/create', [ProyekController::class, 'create'])->name('project.create');
-    Route::post('/project', [ProyekController::class, 'store'])->name('project.store');
-    Route::get('/project/{id}/edit', [ProyekController::class, 'edit'])->name(('project.edit'));
+    Route::get('/project/create', [ProyekController::class, 'create'])->name('project.create')->middleware('role:super_admin,Admin');;
+    Route::post('/project', [ProyekController::class, 'store'])->name('project.store')->middleware('role:super_admin,Admin');;
+    Route::get('/project/{id}/edit', [ProyekController::class, 'edit'])->name(('project.edit'))->middleware('role:super_admin,Admin');;
 
     Route::put('/project/{id}', [ProyekController::class, 'update'])->name('project.update');
     Route::patch('/project/{id}', [ProyekController::class, 'updateStatus'])->name('project.updateStatus');
@@ -40,17 +40,17 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/transaction/{transaksi}', [TransaksiController::class, 'update'])
         ->name('transaction.update');
     Route::patch('/transaction/{transaksi}/status', [TransaksiController::class, 'updateStatus'])
-        ->name('transaction.updateStatus');
+        ->name('transaction.updateStatus')->middleware('role:super_admin,Admin');;
     Route::get('/transaction/{id}/detail', [TransaksiController::class, 'show'])->name('transaction.show');
-    Route::delete('/transaction/{id}', [TransaksiController::class, 'destroy'])->name('transaction.destroy');
+    Route::delete('/transaction/{id}', [TransaksiController::class, 'destroy'])->name('transaction.destroy')->middleware('role:super_admin,Admin');;
 
 
     Route::prefix('transaction/{id}/items')->name('transaction.items.')->group(function () {
         Route::get('/',             [ItemTransaksiController::class, 'index'])->name('index');
         Route::post('/',            [ItemTransaksiController::class, 'store'])->name('store');
         Route::put('/{item_id}',    [ItemTransaksiController::class, 'update'])->name('update');
-        Route::patch('/{item_id}/status',    [ItemTransaksiController::class, 'updateStatus'])->name('updateStatus');
-        Route::delete('/{item_id}', [ItemTransaksiController::class, 'destroy'])->name('destroy');
+        Route::patch('/{item_id}/status',    [ItemTransaksiController::class, 'updateStatus'])->name('updateStatus')->middleware('role:super_admin,Admin');;
+        Route::delete('/{item_id}', [ItemTransaksiController::class, 'destroy'])->name('destroy')->middleware('role:super_admin,Admin');;
     });
 
 
@@ -63,7 +63,7 @@ Route::middleware(['auth'])->group(function () {
 
 
     // Config
-    Route::prefix('config')->name('config.')->group(function () {
+    Route::middleware(['auth', 'role:super_admin,Admin'])->prefix('config')->name('config.')->group(function () {
         Route::prefix('project-config')->name('project-config.')->group(function () {
             // Jenis Proyek
             Route::prefix('type')->name('type.')->group(function () {
@@ -82,11 +82,12 @@ Route::middleware(['auth'])->group(function () {
         });
     });
 
-
     // Forecasting
-    Route::get('/forecasting', [ForecastController::class, 'index'])->name('forecasting.index');
-    Route::post('/forecasting', [ForecastController::class, 'generate'])->name('forecasting.generate');
-    Route::get('/cashflow', [ForecastController::class, 'list_cashflow'])->name('forecasting.list_cashflow');
+    Route::middleware(['auth', 'role:super_admin,Admin'])->group(function () {
+        Route::get('/forecasting', [ForecastController::class, 'index'])->name('forecasting.index');
+        Route::post('/forecasting', [ForecastController::class, 'generate'])->name('forecasting.generate');
+        Route::get('/cashflow', [ForecastController::class, 'list_cashflow'])->name('forecasting.list_cashflow');
+    });
 });
 
 require __DIR__ . '/settings.php';

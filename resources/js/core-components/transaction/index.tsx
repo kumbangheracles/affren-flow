@@ -258,7 +258,7 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
                                         <Edit className={cn('text-muted-foreground! group-hover:text-chart-2!')} />
                                     </DropdownMenuItem>
 
-                                    {currentRole === 'admin' && (
+                                    {(currentRole === 'admin' || currentRole === 'super_admin') && (
                                         <DropdownMenuItem
                                             // onClick={() => OpenModal(record?.transaksi_id)}
                                             className={cn(

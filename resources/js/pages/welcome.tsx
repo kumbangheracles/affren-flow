@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { router } from '@inertiajs/react';
+import { Head, router } from '@inertiajs/react';
 import { useState } from 'react';
 if (!document.getElementById('af-font-link')) {
     const link = document.createElement('link');
@@ -440,6 +440,7 @@ export default function AffrenProfile() {
 
     return (
         <div className="cp-root">
+            <Head title="Selamat Datang - Penyedia Jasa Konstruksi" />
             <nav className="cp-nav">
                 <div className="cp-logo-wrap">
                     <span className="cp-logo-main">Affren Nurzzahrah</span>

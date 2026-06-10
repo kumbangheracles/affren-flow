@@ -234,7 +234,7 @@ const ProjectIndex = ({ proyeks, filters }: PropTypes) => {
                         openDisplay={<EllipsisVertical />}
                         menuItem={
                             <>
-                                {currentRole === 'admin' && (
+                                {(currentRole === 'admin' || currentRole === 'super_admin') && (
                                     <div className="flex flex-col gap-2 p-2">
                                         {/* Detail */}
                                         <DropdownMenuItem

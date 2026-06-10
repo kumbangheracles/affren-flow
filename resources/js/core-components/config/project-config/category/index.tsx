@@ -6,7 +6,6 @@ import { DropdownMenuItem } from '@/components/ui-shadcn/dropdown-menu';
 import { Modal, ModalBody, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui-shadcn/modal';
 import { Button } from '@/components/ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
-import useRole from '@/hooks/use-role';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
@@ -46,13 +45,6 @@ const ProjectConfigCategoryIndex = () => {
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const form = useForm<KategoriProyekForm>(initialKategoriProyekForm);
     const { data, setData, post, processing, errors, put, delete: deleteJenis } = form;
-    const { currentUser, currentRole } = useRole();
-
-    if (currentRole !== 'admin') {
-        toast.info('Hanya admin yg bisa akses fitur ini.');
-        router.visit('dashboard');
-        return;
-    }
 
     // useEffect(() => {
     //     setData('created_by', currentUser?.id);
