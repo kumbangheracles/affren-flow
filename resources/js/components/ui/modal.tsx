@@ -54,6 +54,8 @@ const ModalContent = React.forwardRef<React.ElementRef<typeof DialogPrimitive.Co
                 className={cn(
                     'fixed top-1/2 left-1/2 z-50 w-full -translate-x-1/2 -translate-y-1/2',
                     'bg-card text-card-foreground border-border rounded-xl border shadow-lg',
+                    'flex flex-col', // ← tetap ada
+                    'max-h-[90vh]', // ← hapus overflow-y-auto dari sini
                     'transition-all duration-200',
                     'data-[state=open]:animate-in data-[state=closed]:animate-out',
                     'data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
@@ -103,11 +105,13 @@ const ModalDescription = React.forwardRef<
 >(({ className, ...props }, ref) => <DialogPrimitive.Description ref={ref} className={cn('text-muted-foreground text-sm', className)} {...props} />);
 ModalDescription.displayName = 'ModalDescription';
 
-const ModalBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => <div className={cn('px-6 py-4', className)} {...props} />;
+const ModalBody = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
+    <div className={cn('flex-1 overflow-y-auto px-6 py-4', className)} {...props} />
+);
 ModalBody.displayName = 'ModalBody';
 
 const ModalFooter = ({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) => (
-    <div className={cn('border-border flex items-center justify-end gap-2 border-t px-6 py-4', className)} {...props} />
+    <div className={cn('border-border flex flex-shrink-0 items-center justify-end gap-2 border-t px-6 py-4', className)} {...props} />
 );
 ModalFooter.displayName = 'ModalFooter';
 

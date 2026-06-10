@@ -1,9 +1,8 @@
 import AppDatePicker from '@/components/app-day-picker';
 import AppInput from '@/components/app-input';
 import AppTextArea from '@/components/app-textare';
-import { ModalContent } from '@/components/ui-shadcn/modal';
 import { Button } from '@/components/ui/button';
-import { Modal, ModalBody, ModalClose, ModalFooter, ModalHeader, ModalProps, ModalTitle } from '@/components/ui/modal';
+import { Modal, ModalBody, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalProps, ModalTitle } from '@/components/ui/modal';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { initialTransaksiItem, KategoriTransaksi, TransaksiItem, TransaksiItemForm } from '@/types/transaction.type';
 import { router, useForm } from '@inertiajs/react';
@@ -118,7 +117,7 @@ const ModalFormTransaksiItem = ({ open, item_id, item, kategori, onChange, trans
     }, [item]);
     return (
         <Modal open={open}>
-            <ModalContent className="h-auto overflow-y-auto" size={!isMobile ? 'xl' : 'sm'} hideClose>
+            <ModalContent className="p-0!" size={!isMobile ? 'xl' : 'sm'} hideClose>
                 <ModalHeader>
                     {type === 'update' && (
                         <ModalTitle className="text-sm sm:text-xl">
@@ -127,7 +126,7 @@ const ModalFormTransaksiItem = ({ open, item_id, item, kategori, onChange, trans
                     )}
                     {type === 'delete' && <ModalTitle className="text-sm sm:text-xl">Hapus Transaksi {namaItem} </ModalTitle>}
                 </ModalHeader>
-                <ModalBody>
+                <ModalBody className="px-2! sm:px-6!">
                     {type === 'update' && (
                         <>
                             <div className="grid w-full grid-cols-1 items-center gap-2 sm:grid-cols-2 sm:gap-4">

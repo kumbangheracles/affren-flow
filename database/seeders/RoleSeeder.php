@@ -28,6 +28,13 @@ class RoleSeeder extends Seeder
                 'created_at' => now(),
                 'updated_at' => now(),
             ],
+            [
+                'id' => 3,
+                'role_name' => 'super_admin',
+                'description' => 'Full access dan control ke semuanya',
+                'created_at' => now(),
+                'updated_at' => now(),
+            ],
         ]);
     }
 }

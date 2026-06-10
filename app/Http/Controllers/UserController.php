@@ -38,19 +38,38 @@ class UserController extends Controller
 
     public function store(Request $request): RedirectResponse
     {
+
         $validated = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
             'nama_lengkap' => ['required', 'string', 'max:255'],
             'email'       => ['required', 'email', 'unique:users,email'],
             'password'    => ['required', Password::min(8)],
             'role_id'     => ['required', 'exists:roles,id'],
+            'noHp'     => ['required', 'string', 'min:13'],
             // 'photo'       => ['nullable', 'image', 'max:2048'],
         ], [
             'name.required'         => 'Username wajib diisi.',
+            'name.unique'         => 'Username sudah digunakan.',
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'email.required'        => 'Email wajib diisi.',
             'email.unique'          => 'Email sudah digunakan.',
-            'password.required'     => 'Password wajib diisi.',
+            'noHp.required'        => 'Nomor Hp wajib diisi.',
+            'noHp.unique'          => 'Nomor Hp sudah digunakan.',
+            'password' => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised(),
+            ],
+
+            // messages
+            'password.required' => 'Password wajib diisi.',
+            'password.min'      => 'Password minimal 8 karakter.',
+            'password.string'   => 'Password harus berupa teks.',
+            'password.password' => 'Password harus mengandung huruf besar, huruf kecil, angka, dan karakter spesial.',
             'role_id.required'      => 'Role wajib dipilih.',
             'role_id.exists'        => 'Role tidak valid.',
             // 'photo.image'           => 'File harus berupa gambar.',
@@ -83,17 +102,38 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => ['required', 'string', 'max:255'],
             'nama_lengkap' => ['required', 'string', 'max:255'],
-            'email'       => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
+            'email'       => ['required', 'email', 'unique:users,email'],
+            'password'    => ['required', Password::min(8)],
             'role_id'     => ['required', 'exists:roles,id'],
-            'password'    => ['nullable', Password::min(8)],
-            'photo'       => ['nullable', 'image', 'max:2048'],
+            'noHp'     => ['required', 'string', 'min:13'],
+            // 'photo'       => ['nullable', 'image', 'max:2048'],
         ], [
             'name.required'         => 'Username wajib diisi.',
+            'name.unique'         => 'Username sudah digunakan.',
             'nama_lengkap.required' => 'Nama lengkap wajib diisi.',
             'email.required'        => 'Email wajib diisi.',
             'email.unique'          => 'Email sudah digunakan.',
+            'noHp.required'        => 'Nomor Hp wajib diisi.',
+            'noHp.unique'          => 'Nomor Hp sudah digunakan.',
+            'password' => [
+                'required',
+                'string',
+                Password::min(8)
+                    ->mixedCase()
+                    ->numbers()
+                    ->symbols()
+                    ->uncompromised(),
+            ],
+
+            // messages
+            'password.required' => 'Password wajib diisi.',
+            'password.min'      => 'Password minimal 8 karakter.',
+            'password.string'   => 'Password harus berupa teks.',
+            'password.password' => 'Password harus mengandung huruf besar, huruf kecil, angka, dan karakter spesial.',
             'role_id.required'      => 'Role wajib dipilih.',
             'role_id.exists'        => 'Role tidak valid.',
+            // 'photo.image'           => 'File harus berupa gambar.',
+            // 'photo.max'             => 'Ukuran foto maksimal 2MB.',
         ]);
 
         // $photoUrl = $user->photo_url;
@@ -118,6 +158,8 @@ class UserController extends Controller
             'name'         => $validated['name'],
             'nama_lengkap' => $validated['nama_lengkap'],
             'email'        => $validated['email'],
+            'password'        => $validated['password'],
+            'noHp'        => $validated['noHp'],
             'role_id'      => $validated['role_id'],
             // 'photo_url'    => $photoUrl,
         ];

@@ -8,7 +8,7 @@ interface PageProps extends InertiaPageProps {
     };
 }
 
-type RoleName = 'admin' | 'mandor';
+type RoleName = 'admin' | 'mandor' | 'super_admin';
 const useRole = () => {
     const page = usePage<PageProps>();
     const currentRole = page?.props?.auth?.user?.role?.role_name?.toLowerCase() as RoleName;

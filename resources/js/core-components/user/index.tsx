@@ -2,6 +2,7 @@ import DetailItem from '@/components/app-detail-item';
 import AppDropdownMenu from '@/components/app-dopdown-menu';
 import AppInput from '@/components/app-input';
 import AppSearchInput from '@/components/app-input-search';
+import AppSelect from '@/components/app-select';
 import { Column, DataTable } from '@/components/app-table';
 import { Badge } from '@/components/ui-shadcn/badge';
 import { DropdownMenuItem } from '@/components/ui-shadcn/dropdown-menu';
@@ -9,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Modal, ModalBody, ModalClose, ModalContent, ModalFooter, ModalHeader, ModalTitle } from '@/components/ui/modal';
 import { formatDate } from '@/helpers/format';
 import { useIsMobile } from '@/hooks/use-mobile';
+import useRole from '@/hooks/use-role';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
@@ -46,7 +48,7 @@ const UserIndex = () => {
     const isMobile = useIsMobile();
     const currentPerPage = new URLSearchParams(window.location.search).get('per_page') ?? '10';
     const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
+    const { currentRole } = useRole();
     const form = useForm<UserPropsForm>(initialUserProps);
     const { data, setData, post, processing, errors, put, delete: deleteUser } = form;
 
@@ -73,6 +75,8 @@ const UserIndex = () => {
     };
 
     const handleSubmit = () => {
+        if (currentRole === 'mandor') return;
+
         if (selectedModalType === 'post') {
             post(route('user.store'), {
                 // ← fix: pakai route()
@@ -91,7 +95,7 @@ const UserIndex = () => {
                 onFinish: () => setLoading(false),
             });
         } else if (selectedModalType === 'put') {
-            post(route('user.update', selectedId as number), {
+            put(route('user.update', selectedId as number), {
                 // ← fix: post + _method PUT
                 forceFormData: true,
                 onStart: () => setLoading(true),
@@ -181,7 +185,9 @@ const UserIndex = () => {
             key: 'role',
             label: 'Role',
             className: 'text-left',
-            render: (_: any, row: UserProps) => <Badge className="text-[10px] font-medium sm:text-sm">{row?.role?.role_name || '-'}</Badge>,
+            render: (_: any, row: UserProps) => (
+                <Badge className="text-[10px] font-semibold sm:text-sm">{row?.role?.role_name?.replace('_', ' ').toUpperCase() || '-'}</Badge>
+            ),
         },
         {
             key: 'created_at',
@@ -199,6 +205,9 @@ const UserIndex = () => {
             label: 'Action',
             className: 'text-center',
             render: (_: any, record: UserProps) => {
+                const targetRole = record?.role?.role_name.toLowerCase();
+
+                const isDisabled = targetRole === 'super_admin' || (currentRole === 'admin' && ['admin', 'super_admin'].includes(targetRole ?? ''));
                 return (
                     <AppDropdownMenu
                         openDisplay={<EllipsisVertical />}
@@ -207,7 +216,7 @@ const UserIndex = () => {
                                 <div className="flex flex-col gap-2 p-2">
                                     <DropdownMenuItem
                                         onClick={() => handleOpenModal(record?.id, 'show')}
-                                        disabled={record?.name === 'herkaladmin'}
+                                        // disabled={record?.role?.role_name === 'super_admin'}
                                         className={cn('group hover:bg-muted! flex cursor-pointer items-center justify-between p-2')}
                                     >
                                         <p className={cn('text-foreground! group-hover:text-chart-1!')}>Detail</p>
@@ -215,19 +224,21 @@ const UserIndex = () => {
                                     </DropdownMenuItem>
 
                                     <DropdownMenuItem
-                                        disabled={record?.name === 'herkaladmin'}
+                                        disabled={isDisabled}
                                         onClick={() => handleOpenModal(record?.id, 'put')}
-                                        className={cn('group hover:bg-muted! flex cursor-pointer items-center justify-between p-2')}
+                                        className={cn('group flex items-center justify-between p-2', !isDisabled && 'hover:bg-muted! cursor-pointer')}
                                     >
                                         <p className={cn('text-foreground! group-hover:text-chart-2!')}>Ubah</p>
                                         <Edit className={cn('text-muted-foreground! group-hover:text-chart-2!')} />
                                     </DropdownMenuItem>
 
                                     <DropdownMenuItem
-                                        disabled={record?.name === 'herkaladmin'}
-                                        // onClick={() => OpenModal(record?.transaksi_id)}
-                                        className={cn('group hover:bg-error/10! flex cursor-pointer items-center justify-between p-2 transition-all')}
+                                        disabled={isDisabled}
                                         onClick={() => handleOpenModal(record?.id, 'delete')}
+                                        className={cn(
+                                            'group flex items-center justify-between p-2 transition-all',
+                                            !isDisabled && 'hover:bg-error/10! cursor-pointer',
+                                        )}
                                     >
                                         <p className={cn('text-foreground! group-hover:text-error!')}>Hapus</p>
                                         <Trash className={cn('text-muted-foreground! group-hover:text-error!')} />
@@ -240,6 +251,25 @@ const UserIndex = () => {
             },
         },
     ];
+
+    const roleOptions =
+        currentRole !== 'super_admin'
+            ? [
+                  {
+                      value: '2',
+                      label: 'Mandor',
+                  },
+              ]
+            : [
+                  {
+                      value: '1',
+                      label: 'Admin',
+                  },
+                  {
+                      value: '2',
+                      label: 'Mandor',
+                  },
+              ];
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -286,7 +316,7 @@ const UserIndex = () => {
             </div>
 
             <Modal open={selectedModalType !== null} key={selectedId}>
-                <ModalContent size="xl" hideClose>
+                <ModalContent size="xl" hideClose className="p-0! sm:p-4!">
                     <ModalHeader>
                         <ModalTitle className="max-w-[500px]">
                             <h4 className="block max-w-[500px] truncate text-[17px] font-medium font-semibold">
@@ -302,7 +332,7 @@ const UserIndex = () => {
                             </h4>
                         </ModalTitle>
                     </ModalHeader>
-                    <ModalBody>
+                    <ModalBody className="p-0! sm:p-2!">
                         {selectedModalType === 'delete' && (
                             <div className="flex w-full max-w-[500px] items-center justify-center text-center">
                                 <h4 className="text-sm">
@@ -360,6 +390,12 @@ const UserIndex = () => {
                                     // error={errors?.nama}
                                     autoComplete="off"
                                 />
+                                <AppSelect
+                                    label="Role"
+                                    options={roleOptions}
+                                    value={data?.role?.id.toString()}
+                                    onValueChange={(e) => setData('role_id', parseInt(e))}
+                                />
                                 <AppInput
                                     // disabled={}
                                     placeholder="Masukkan password . . ."
@@ -374,7 +410,7 @@ const UserIndex = () => {
                         )}
 
                         {selectedModalType === 'show' && (
-                            <div>
+                            <div className="p-4">
                                 <DetailItem label="Nama Lengkap" value={selectedDataUser?.nama_lengkap || '-'} />
                                 <DetailItem
                                     label="Username"
@@ -385,10 +421,15 @@ const UserIndex = () => {
                                 <DetailItem label="Password" value={selectedDataUser?.password || '-'} />
                                 <DetailItem label="No Hp" value={selectedDataUser?.noHp || '-'} />
                                 <DetailItem
+                                    label="Role"
+                                    valueClassName="text-background bg-foreground rounded-xl px-1 py-1 text-[10px] font-semibold sm:text-sm"
+                                    value={selectedDataUser?.role?.role_name.replace('_', '').toUpperCase() || '-'}
+                                />
+                                {/* <DetailItem
                                     label="Status saat ini"
                                     valueClassName="text-background bg-foreground rounded-xl px-1 py-1 text-[10px] font-semibold sm:text-sm"
                                     value={selectedDataUser?.isActive ? 'Aktif' : 'Tidak Aktif'}
-                                />
+                                /> */}
                                 <DetailItem label="Dibuat pada" value={formatDate(selectedDataUser?.created_at) || '-'} />
                                 <DetailItem label="Terakhir di update pada" value={formatDate(selectedDataUser?.updated_at) || '-'} />
                             </div>

@@ -25,13 +25,20 @@ class DatabaseSeeder extends Seeder
 
         ]);
         User::factory()->create([
+            'name' => 'herkalsuperadmin',
+            'nama_lengkap' => 'Ahmad Herkal Taqyudin',
+            'email' => 'herkal@superadmin.com',
+            'password' => bcrypt('herkal123'),
+            'noHp' => '08129523123123',
+            'role_id' => Role::where('role_name', 'super_admin')->value('id'),
+        ]);
+        User::factory()->create([
             'name' => 'herkaladmin',
             'nama_lengkap' => 'Ahmad Herkal Taqyudin',
             'email' => 'herkal@admin.com',
             'password' => bcrypt('herkal123'),
-
-            'isActive' => true,
-            'role_id' => Role::where('role_name', 'Admin')->value('id'),
+            'noHp' => '0812959123123123',
+            'role_id' => Role::where('role_name', 'admin')->value('id'),
         ]);
 
         User::factory()->create([
@@ -40,6 +47,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'herkal@mandor.com',
             'password' => bcrypt('herkal123'),
             'isActive' => true,
+            'noHp' => '081295231231999',
             'role_id' => Role::where('role_name', 'Mandor')->value('id'),
         ]);
         User::factory()->create([
@@ -48,6 +56,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'jamal@admin.com',
             'password' => bcrypt('jamal123'),
             'isActive' => true,
+            'noHp' => '08129523123777',
             'role_id' => Role::where('role_name', 'admin')->value('id'),
         ]);
         User::factory()->create([
@@ -56,6 +65,7 @@ class DatabaseSeeder extends Seeder
             'email' => 'wahyu@mandor.com',
             'password' => bcrypt('wahyu123'),
             'isActive' => true,
+            'noHp' => '08129523123767',
             'role_id' => Role::where('role_name', 'Mandor')->value('id'),
         ]);
         User::factory()->create([
@@ -64,13 +74,14 @@ class DatabaseSeeder extends Seeder
             'email' => 'doni@mandor.com',
             'password' => bcrypt('doni123'),
             'isActive' => true,
+            'noHp' => '08129523128767',
             'role_id' => Role::where('role_name', 'Mandor')->value('id'),
         ]);
 
         $this->call([
             KategoriProyekSeeder::class,
             JenisProyekSeeder::class,
-            // ProyekTransaksiSeeder::class,
+            ProyekTransaksiSeeder::class,
         ]);
 
         // $this->call(ProyekSeeder::class);
