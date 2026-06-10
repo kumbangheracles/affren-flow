@@ -25,6 +25,30 @@ class DatabaseSeeder extends Seeder
 
         ]);
         User::factory()->create([
+            'name' => 'superadmin',
+            'nama_lengkap' => 'Super Admin',
+            'email' => 'superadmin@superadmin.com',
+            'password' => bcrypt('superadmin123'),
+            'noHp' => '08129523123123',
+            'role_id' => Role::where('role_name', 'super_admin')->value('id'),
+        ]);
+        User::factory()->create([
+            'name' => 'admintest',
+            'nama_lengkap' => 'Super Admin',
+            'email' => 'admintest@admintest.com',
+            'password' => bcrypt('admintest123'),
+            'noHp' => '08129523123123',
+            'role_id' => Role::where('role_name', 'Admin')->value('id'),
+        ]);
+        User::factory()->create([
+            'name' => 'mandortest',
+            'nama_lengkap' => 'Super Admin',
+            'email' => 'mandortest@mandortest.com',
+            'password' => bcrypt('mandortest123'),
+            'noHp' => '08129523123123',
+            'role_id' => Role::where('role_name', 'Mandor')->value('id'),
+        ]);
+        User::factory()->create([
             'name' => 'herkalsuperadmin',
             'nama_lengkap' => 'Ahmad Herkal Taqyudin',
             'email' => 'herkal@superadmin.com',
@@ -81,7 +105,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             KategoriProyekSeeder::class,
             JenisProyekSeeder::class,
-            ProyekTransaksiSeeder::class,
+            // ProyekTransaksiSeeder::class,
         ]);
 
         // $this->call(ProyekSeeder::class);
