@@ -1,1 +1,0 @@
-import{K as p}from"./app-CMHv8cAX.js";const h=()=>{var o,e,s,t,u,n,c;const r=p(),l=(u=(t=(s=(e=(o=r==null?void 0:r.props)==null?void 0:o.auth)==null?void 0:e.user)==null?void 0:s.role)==null?void 0:t.role_name)==null?void 0:u.toLowerCase(),m=(c=(n=r==null?void 0:r.props)==null?void 0:n.auth)==null?void 0:c.user;return{currentRole:l,currentUser:m}};export{h as u};

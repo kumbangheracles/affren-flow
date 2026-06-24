@@ -30,7 +30,7 @@ const ProjectCreateIndex = () => {
     console.log(flash);
     console.log('Data proyek: ', dataProyek);
     // console.log('Kategori proyek: ', kategori_proyeks);
-    // console.log('Jenis proyek: ', jenis_proyeks);
+    console.log('Jenis proyek: ', jenis_proyeks);
     const [loading, setLoading] = useState<boolean>(false);
 
     const breadcrumbs: BreadcrumbItem[] = [
