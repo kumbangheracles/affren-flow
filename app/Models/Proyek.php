@@ -24,6 +24,7 @@ class Proyek extends Model
         'tanggal_mulai',
         'tanggal_selesai',
         'pajak_persen',
+        'proyek_images',
         // 'uang_bahan_persen',
         // 'jasa_tukang_persen',
         // 'biaya_staff_perpajakan',
@@ -66,5 +67,14 @@ class Proyek extends Model
     public function creator()
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function proyek_images()
+    {
+        return $this->hasMany(
+            ProyekImage::class,
+            'proyek_id',
+            'proyek_id'
+        );
     }
 }

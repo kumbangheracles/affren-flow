@@ -2,17 +2,19 @@ import AppDatePicker from '@/components/app-day-picker';
 import AppInput from '@/components/app-input';
 import AppSelect, { SelectOption } from '@/components/app-select';
 import AppTextArea from '@/components/app-textare';
+import { FileUpload, FileUploadTrigger } from '@/components/ui-shadcn/file-upload';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import { cn } from '@/lib/utils';
 import { BreadcrumbItem } from '@/types';
 import { JenisProyek } from '@/types/jenis_proyek.type';
 import { KategoriProyek } from '@/types/kategori_proyek.type';
-import { initialProyek, ProyekProps, StatusProyek } from '@/types/project.type';
+import { initialProyek, ProyekImages, ProyekProps, StatusProyek } from '@/types/project.type';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
-import { Loader2 } from 'lucide-react';
+import { ImagePlus, Loader2, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
@@ -26,13 +28,13 @@ const ProjectCreateIndex = () => {
     const { props } = usePage<PageProps>();
     const { proyek: dataProyek, jenis_proyeks, kategori_proyeks } = props;
     const projectId = dataProyek?.proyek_id ?? null;
-    const { flash } = usePage().props;
-    console.log(flash);
-    console.log('Data proyek: ', dataProyek);
-    // console.log('Kategori proyek: ', kategori_proyeks);
-    console.log('Jenis proyek: ', jenis_proyeks);
-    const [loading, setLoading] = useState<boolean>(false);
+    // const { flash } = usePage().props;
+    const [existingImages, setExistingImages] = useState<ProyekImages[]>(dataProyek?.proyek_images ?? []);
 
+    const [files, setFiles] = useState<File[]>([]);
+
+    const [loading, setLoading] = useState<boolean>(false);
+    console.log('data proyek: ', dataProyek);
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: projectId !== null ? 'Ubah proyek' : 'Buat Proyek Baru',
@@ -64,7 +66,15 @@ const ProjectCreateIndex = () => {
                 label: item.nama,
             }));
     };
+    // File Input
+    useEffect(() => {
+        setData('uploaded_images', files);
 
+        setData(
+            'existing_images',
+            existingImages.map((img) => img.id),
+        );
+    }, [files, existingImages]);
     const validateProyek = (data: ProyekProps) => {
         const errors: string[] = [];
 
@@ -112,7 +122,9 @@ const ProjectCreateIndex = () => {
         if (!validateProyek(data)) return;
 
         if (projectId !== null) {
-            put(`/project/${projectId}`, {
+            setData('_method', 'PUT');
+            post(`/project/${projectId}`, {
+                forceFormData: true,
                 onStart: () => setLoading(true),
 
                 onSuccess: () => {
@@ -283,6 +295,73 @@ const ProjectCreateIndex = () => {
                     placeholder="Masukkan nama biaya tak terduga . . ."
                     label="Biaya tak terduga (%)"
                 /> */}
+            </div>
+            <div className="bg-background/10 sm:border-muted m-0 w-full max-w-3xl rounded-xl border-0 p-4 sm:m-4 sm:border">
+                <div className="flex w-full items-center justify-between pb-4">
+                    <Label className="text-2xl font-semibold">Foto Proyek</Label>
+
+                    <Button
+                        type="button"
+                        variant="secondary"
+                        onClick={() => {
+                            setExistingImages([]);
+                            setFiles([]);
+                        }}
+                    >
+                        Hapus Semua
+                    </Button>
+                </div>
+
+                <FileUpload value={files} onValueChange={setFiles} accept="image/*" maxFiles={6} maxSize={5 * 1024 * 1024} multiple>
+                    <div className="grid grid-cols-3 gap-2">
+                        {existingImages.map((image) => (
+                            <div key={`old-${image.id}`} className="group relative aspect-square">
+                                <img src={image.image_url} alt="" className="h-full w-full rounded-lg object-cover" />
+
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    className="absolute top-1 right-1"
+                                    onClick={() => setExistingImages((prev) => prev.filter((img) => img.id !== image.id))}
+                                >
+                                    <X className="size-3" />
+                                </Button>
+                            </div>
+                        ))}
+
+                        {files.map((file, index) => (
+                            <div key={`new-${index}`} className="group relative aspect-square">
+                                <img src={URL.createObjectURL(file)} alt="" className="h-full w-full rounded-lg object-cover" />
+
+                                <Button
+                                    type="button"
+                                    variant="secondary"
+                                    size="icon"
+                                    className="absolute top-1 right-1"
+                                    onClick={() => setFiles((prev) => prev.filter((_, i) => i !== index))}
+                                >
+                                    <X className="size-3" />
+                                </Button>
+                            </div>
+                        ))}
+
+                        {/* BUTTON TAMBAH */}
+                        {existingImages.length + files.length < 6 && (
+                            <FileUploadTrigger asChild>
+                                <button
+                                    type="button"
+                                    className="hover:border-primary hover:bg-primary/5 flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-lg border-2 border-dashed transition-colors"
+                                >
+                                    <ImagePlus className="text-muted-foreground size-6" />
+                                    <span className="text-muted-foreground text-xs">Masukkan</span>
+                                </button>
+                            </FileUploadTrigger>
+                        )}
+                    </div>
+                </FileUpload>
+
+                <p className="text-muted-foreground mt-2 text-center text-xs">{existingImages.length + files.length}/6 Foto</p>
             </div>
             <div className="px-4 pb-7">
                 <AppTextArea

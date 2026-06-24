@@ -23,7 +23,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/project', [ProyekController::class, 'store'])->name('project.store')->middleware('role:super_admin,Admin');;
     Route::get('/project/{id}/edit', [ProyekController::class, 'edit'])->name(('project.edit'))->middleware('role:super_admin,Admin');;
 
-    Route::put('/project/{id}', [ProyekController::class, 'update'])->name('project.update');
+    Route::post('/project/{id}', [ProyekController::class, 'update'])->name('project.update');
     Route::patch('/project/{id}', [ProyekController::class, 'updateStatus'])->name('project.updateStatus');
     Route::delete('/project/{id}', [ProyekController::class, 'destroy'])->name('project.destroy');
 

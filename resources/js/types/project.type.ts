@@ -2,6 +2,14 @@ import { JenisProyek } from './jenis_proyek.type';
 import { KategoriProyek } from './kategori_proyek.type';
 import { UserProps } from './user.type';
 
+export interface ProyekImages {
+    id: string;
+    proyek_id: string;
+    image_url: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
 export interface ProyekProps {
     [key: string]: any;
     proyek_id: string;
@@ -13,7 +21,9 @@ export interface ProyekProps {
 
     kategori?: KategoriProyek;
     jenis?: JenisProyek;
-
+    proyek_images?: ProyekImages[];
+    uploaded_images: File[];
+    existing_image_ids?: string[];
     pagu_total: number;
 
     tanggal_mulai: string;
@@ -63,8 +73,11 @@ export const initialProyek: ProyekProps = {
     nama_klien: '',
 
     status: 'sedang_berjalan', // default
-
+    existing_image_ids: [],
     deskripsi_proyek: null,
+    uploaded_images: [],
+
+    proyek_img: '',
 
     created_at: '',
     updated_at: '',

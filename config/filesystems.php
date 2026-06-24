@@ -40,7 +40,7 @@ return [
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
-            'url' => env('APP_URL').'/storage',
+            'url' => env('APP_URL') . '/storage',
             'visibility' => 'public',
             'throw' => false,
         ],
@@ -57,7 +57,21 @@ return [
             'throw' => false,
         ],
 
+        'cloudinary' => [
+            'driver' => 'cloudinary',
+
+            'cloud' => env('CLOUDINARY_CLOUD_NAME'),
+
+            'key' => env('CLOUDINARY_KEY'),
+
+            'secret' => env('CLOUDINARY_SECRET'),
+
+            'secure' => true,
+        ],
+
     ],
+
+
 
     /*
     |--------------------------------------------------------------------------

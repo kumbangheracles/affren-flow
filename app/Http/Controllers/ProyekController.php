@@ -10,6 +10,7 @@ use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 use App\Services\FinanceService;
 use Illuminate\Support\Facades\Auth;
+use Cloudinary\Cloudinary;
 
 class ProyekController extends Controller
 
@@ -24,6 +25,7 @@ class ProyekController extends Controller
     /**
      * Display a listing of the resource.
      */
+
     public function index(Request $request)
     {
         $search = $request->query('search');
@@ -104,11 +106,36 @@ class ProyekController extends Controller
             'nama_klien' => 'required|string|max:255',
             'status' => 'required|in:sedang_berjalan,selesai,dibatalkan',
             'deskripsi_proyek' => 'nullable|string',
+
+            'uploaded_images' => 'nullable|array',
+
+            'uploaded_images.*' => 'image|max:5120',
         ]);
 
         $data['created_by'] = Auth::id();
 
-        Proyek::create($data);
+        $proyek = Proyek::create($data);
+
+        if ($request->hasFile('uploaded_images')) {
+
+            foreach ($request->file('uploaded_images') as $image) {
+
+                $cloudinary = app(\Cloudinary\Cloudinary::class);
+
+                $result = $cloudinary
+                    ->uploadApi()
+                    ->upload(
+                        $image->getRealPath(),
+                        [
+                            'folder' => 'afreenflow/proyek'
+                        ]
+                    );
+
+                $proyek->proyek_images()->create([
+                    'image_url' => $result['secure_url'],
+                ]);
+            }
+        }
 
         return redirect()
             ->route('project.index')
@@ -120,7 +147,7 @@ class ProyekController extends Controller
     public function show($proyek_id)
     {
         //
-        $proyek = Proyek::with(['kategori', 'jenis'])->with('creator.role')
+        $proyek = Proyek::with(['kategori', 'jenis'])->with('creator.role')->with('proyek_images')
             ->findOrFail($proyek_id);
         $anggaran = $this->financeService->hitungAnggaranProyek($proyek);
         $realisasi = $this->financeService->hitungRealisasiPerKategori($proyek);
@@ -140,9 +167,11 @@ class ProyekController extends Controller
      */
     public function edit($proyek_id)
     {
-        $proyek = Proyek::findOrFail($proyek_id);
+        $proyek = Proyek::with('proyek_images')->findOrFail($proyek_id);
         $kategori_proyeks = KategoriProyek::all();
         $jenis_proyeks = JenisProyek::all();
+
+
         return Inertia::render('project/create/index', [
             'proyek' => $proyek,
             'kategori_proyeks' => $kategori_proyeks,
@@ -155,33 +184,84 @@ class ProyekController extends Controller
      */
     public function update(Request $request, $proyek_id)
     {
-        //
-        $proyek = Proyek::findOrFail($proyek_id);
+        $proyek = Proyek::with('proyek_images')->findOrFail($proyek_id);
 
         $data = $request->validate([
             'nama_proyek' => 'required|string|max:255',
-            // 'tipe_proyek' => 'required|in:papping,u_ditch,spall,beton,sab',
             'pagu_total' => 'required|numeric|min:0',
             'kategori_proyek_id' => 'required|numeric|min:1',
             'jenis_proyek_id' => 'required|numeric|min:1',
             'tanggal_mulai' => 'required|date',
             'tanggal_selesai' => 'nullable|date|after_or_equal:tanggal_mulai',
             'pajak_persen' => 'required|numeric|min:0|max:100',
-            // 'uang_bahan_persen' => 'required|numeric|min:0|max:100',
-            // 'jasa_tukang_persen' => 'required|numeric|min:0|max:100',
-            // 'biaya_tak_terduga_persen' => 'required|numeric|min:0|max:100',
-            // 'biaya_staff_perpajakan' => 'required|numeric|min:0',
-            // 'biaya_staff_entry_data' => 'required|numeric|min:0',
             'nama_klien' => 'required|string|max:255',
             'status' => 'required|in:sedang_berjalan,selesai,dibatalkan',
             'deskripsi_proyek' => 'nullable|string',
+
+            'uploaded_images' => 'nullable|array',
+            'uploaded_images.*' => 'image|max:5120',
+
+            'existing_images' => 'nullable|array',
+            'existing_images.*' => 'integer',
         ]);
+
+        $cloudinary = app(\Cloudinary\Cloudinary::class);
+
+        $keepImageIds = $request->input('existing_images', []);
+        // dd([
+        //     'existing_images' => $request->input('existing_images'),
+        //     'keepImageIds' => $keepImageIds,
+        //     'all' => $request->all(),
+        // ]);
+
+        $deletedImages = $proyek->proyek_images()
+            ->whereNotIn('id', $keepImageIds)
+            ->get();
+
+        foreach ($deletedImages as $image) {
+
+            if (!empty($image->public_id)) {
+                $cloudinary
+                    ->uploadApi()
+                    ->destroy($image->public_id);
+            }
+
+            $image->delete();
+        }
+
+
+        if ($request->hasFile('uploaded_images')) {
+
+            foreach ($request->file('uploaded_images') as $file) {
+
+                $result = $cloudinary
+                    ->uploadApi()
+                    ->upload(
+                        $file->getRealPath(),
+                        [
+                            'folder' => 'afreenflow/proyek'
+                        ]
+                    );
+
+                $proyek->proyek_images()->create([
+                    'image_url' => $result['secure_url'],
+                    'public_id' => $result['public_id'],
+                ]);
+            }
+        }
+
         $data['created_by'] = Auth::id();
+
+        unset(
+            $data['uploaded_images'],
+            $data['existing_images']
+        );
+
         $proyek->update($data);
 
         return redirect()
             ->route('project.index')
-            ->with(['success' => 'Proyek berhasil diperbarui!']);
+            ->with('success', 'Proyek berhasil diperbarui!');
     }
 
     // Patch status
