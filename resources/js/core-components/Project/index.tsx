@@ -312,7 +312,7 @@ const ProjectIndex = ({ proyeks, filters }: PropTypes) => {
                             placeholder="Filter Status"
                         />
 
-                        {currentRole === 'admin' && (
+                        {(currentRole === 'admin' || currentRole === 'super_admin') && (
                             <Button
                                 className="mt-2 cursor-pointer"
                                 disabled={processing}

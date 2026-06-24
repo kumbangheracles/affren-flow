@@ -441,13 +441,20 @@ const UserIndex = () => {
                                 {processing || loading ? <LoaderCircle className="animate-spin" /> : 'Batal'}
                             </Button>
                         </ModalClose>
-                        <Button variant={selectedModalType === 'delete' ? 'destructive' : 'outline'} className="..." onClick={() => handleSubmit()}>
-                            {processing || loading ? (
-                                <LoaderCircle className="animate-spin" />
-                            ) : (
-                                <>{selectedModalType === 'delete' ? 'Hapus' : 'Simpan'}</>
-                            )}
-                        </Button>
+
+                        {selectedModalType !== 'show' && (
+                            <Button
+                                variant={selectedModalType === 'delete' ? 'destructive' : 'outline'}
+                                className="..."
+                                onClick={() => handleSubmit()}
+                            >
+                                {processing || loading ? (
+                                    <LoaderCircle className="animate-spin" />
+                                ) : (
+                                    <>{selectedModalType === 'delete' ? 'Hapus' : 'Simpan'}</>
+                                )}
+                            </Button>
+                        )}
                     </ModalFooter>
                 </ModalContent>
             </Modal>
