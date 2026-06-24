@@ -55,8 +55,10 @@ const ProjectCreateIndex = () => {
     }));
 
     const jenisProyekOptions = (data: JenisProyek[], kategori_proyek_id: number): SelectOption[] => {
+        const kategoriId = Number(kategori_proyek_id);
+
         return (data ?? [])
-            .filter((item) => item.kategori_proyek_id === kategori_proyek_id)
+            .filter((item) => Number(item.kategori_proyek_id) === kategoriId)
             .map((item) => ({
                 value: String(item.id),
                 label: item.nama,
