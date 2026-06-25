@@ -10,7 +10,6 @@ use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 use App\Services\FinanceService;
 use Illuminate\Support\Facades\Auth;
-use Cloudinary\Cloudinary;
 
 class ProyekController extends Controller
 
@@ -290,12 +289,25 @@ class ProyekController extends Controller
      */
     public function destroy($proyek_id): RedirectResponse
     {
-        $proyek = Proyek::findOrFail($proyek_id);
+        $proyek = Proyek::with('proyek_images')->findOrFail($proyek_id);
+
+        $cloudinary = app(\Cloudinary\Cloudinary::class);
+
+        foreach ($proyek->proyek_images as $image) {
+
+            if (!empty($image->public_id)) {
+                $cloudinary
+                    ->uploadApi()
+                    ->destroy($image->public_id);
+            }
+
+            $image->delete();
+        }
 
         $proyek->delete();
 
         return redirect()
             ->route('project.index')
-            ->with(['success' => 'Proyek berhasil dihapus!']);
+            ->with('success', 'Proyek berhasil dihapus!');
     }
 }

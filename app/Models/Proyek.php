@@ -77,4 +77,8 @@ class Proyek extends Model
             'proyek_id'
         );
     }
+
+    // public function proyek_mandor(){
+    //     return $this->hasMany(User::class, 'user_id', 'user')
+    // }
 }

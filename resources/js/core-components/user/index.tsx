@@ -51,7 +51,10 @@ const UserIndex = () => {
     const { currentRole } = useRole();
     const form = useForm<UserPropsForm>(initialUserProps);
     const { data, setData, post, processing, errors, put, delete: deleteUser } = form;
-
+    const [existingImage, setExistingImage] = useState<string | null>(null);
+    const [file, setFile] = useState<File | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const hasImage = !!file || !!existingImage;
     const handleSearch = (val: string) => {
         setSearch(val);
 
@@ -74,6 +77,12 @@ const UserIndex = () => {
         setSelectedModalType(modalType as ModalType);
     };
 
+    useEffect(() => {
+        setData('uploaded_image', file as File);
+
+        setData('existing_image', existingImage);
+    }, [file, existingImage]);
+
     const handleSubmit = () => {
         if (currentRole === 'mandor') return;
 
@@ -95,7 +104,8 @@ const UserIndex = () => {
                 onFinish: () => setLoading(false),
             });
         } else if (selectedModalType === 'put') {
-            put(route('user.update', selectedId as number), {
+            // setData('_method', 'PUT');
+            post(route('user.update', selectedId as number), {
                 // ← fix: post + _method PUT
                 forceFormData: true,
                 onStart: () => setLoading(true),
@@ -135,6 +145,8 @@ const UserIndex = () => {
         setSelectedModalType(null);
         setData(initialUserProps);
         setSelectedDataUser(null);
+        setFile(null);
+        setExistingImage(null);
     };
 
     useEffect(() => {
@@ -142,6 +154,7 @@ const UserIndex = () => {
         if (selectedModalType === 'put' || selectedModalType === 'delete' || selectedModalType === 'show') {
             setData(selectedData as UserProps);
             setSelectedDataUser(selectedData as UserProps);
+            setExistingImage((selectedData?.user_image?.image_url as string) ?? '');
         }
 
         console.log('modal type: ', selectedModalType);
@@ -156,11 +169,25 @@ const UserIndex = () => {
             render: (_: any, __: any, index: number) => <span className="text-muted-foreground text-[10px] text-wrap sm:text-sm">{index + 1}</span>,
         },
         {
-            key: 'nama_lengkap',
-            label: 'Nama Lengkap',
-            className: 'text-left',
-            render: (_: any, row: UserProps) => <span className="text-[10px] font-medium sm:text-sm">{row?.nama_lengkap}</span>,
+            key: 'user_image',
+            label: 'Foto',
+            className: 'text-center',
+            render: (_: any, record: UserProps) => (
+                <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full">
+                    <img
+                        src={record?.user_image?.image_url ?? '/images/default-account.png'}
+                        alt="user-img"
+                        className="h-full w-full object-contain"
+                    />
+                </div>
+            ),
         },
+        // {
+        //     key: 'nama_lengkap',
+        //     label: 'Nama Lengkap',
+        //     className: 'text-left',
+        //     render: (_: any, row: UserProps) => <span className="text-[10px] font-medium sm:text-sm">{row?.nama_lengkap}</span>,
+        // },
         {
             key: 'name',
             label: 'Username',
@@ -342,75 +369,120 @@ const UserIndex = () => {
                         )}
 
                         {(selectedModalType === 'post' || selectedModalType === 'put') && (
-                            <div className="grid w-full grid-cols-1 items-center gap-2 p-4 sm:grid-cols-2 sm:gap-4">
-                                {/* <AppSelect
-                                    options={kategoriOptions ?? []}
-                                    value={data?.kategori_proyek_id !== 0 ? data?.kategori_proyek_id?.toString() : ''}
-                                    onValueChange={(e) => setData('kategori_proyek_id', Number(e))}
-                                    label="Kategori"
-                                    placeholder="Pilih kategori proyek . . ."
-                                    // error={errors?.kategori_proyek_id}
-                                /> */}
-                                <div aria-hidden="true" className="hidden">
-                                    <input type="text" tabIndex={-1} autoComplete="username" />
-                                    <input type="password" tabIndex={-1} autoComplete="current-password" />
-                                </div>
+                            <div>
+                                <div className="space-y-4">
+                                    <div className="flex w-full flex-col items-center justify-center gap-3">
+                                        <div className="relative aspect-square w-40 overflow-hidden rounded-full border-2">
+                                            <img
+                                                src={file ? URL.createObjectURL(file) : existingImage || '/images/default-account.png'}
+                                                alt="User"
+                                                className="h-full w-full object-cover"
+                                            />
+                                        </div>
 
-                                <AppInput
-                                    // disabled={}
-                                    placeholder="Masukkan nama lengkap . . ."
-                                    label="Nama Lengkap"
-                                    value={data?.nama_lengkap}
-                                    onChange={(e) => setData('nama_lengkap', e.target.value)}
-                                    // error={errors?.nama}
-                                />
-                                <AppInput
-                                    // disabled={}
-                                    placeholder="Masukkan username . . ."
-                                    label="Username"
-                                    value={data?.name}
-                                    onChange={(e) => setData('name', e.target.value)}
-                                    // error={errors?.nama}
-                                />
-                                <AppInput
-                                    // disabled={}
-                                    placeholder="Masukkan email . . ."
-                                    label="Email"
-                                    value={data?.email}
-                                    autoComplete="off"
-                                    onChange={(e) => setData('email', e.target.value)}
-                                    // error={errors?.nama}
-                                />
-                                <AppInput
-                                    // disabled={}
-                                    placeholder="Masukkan No Hp . . ."
-                                    label="No Hp"
-                                    value={data?.noHp}
-                                    onChange={(e) => setData('noHp', e.target.value)}
-                                    // error={errors?.nama}
-                                    autoComplete="off"
-                                />
-                                <AppSelect
-                                    label="Role"
-                                    options={roleOptions}
-                                    value={data?.role?.id.toString()}
-                                    onValueChange={(e) => setData('role_id', parseInt(e))}
-                                />
-                                <AppInput
-                                    // disabled={}
-                                    placeholder="Masukkan password . . ."
-                                    label="Password"
-                                    autoComplete="off"
-                                    value={data?.password}
-                                    isType="password"
-                                    onChange={(e) => setData('password', e.target.value)}
-                                    // error={errors?.nama}
-                                />
+                                        <div className="flex items-center justify-center gap-3">
+                                            <Button
+                                                type="button"
+                                                variant="outline"
+                                                disabled={!hasImage}
+                                                onClick={() => {
+                                                    if (file) setFile(null);
+                                                    if (existingImage) setExistingImage(null);
+                                                }}
+                                            >
+                                                Hapus Foto
+                                            </Button>
+
+                                            <Button type="button" onClick={() => inputRef.current?.click()}>
+                                                Tambah Foto
+                                            </Button>
+
+                                            <input
+                                                ref={inputRef}
+                                                type="file"
+                                                accept="image/*"
+                                                className="hidden"
+                                                onChange={(e) => {
+                                                    const selectedFile = e.target.files?.[0];
+                                                    if (selectedFile) {
+                                                        setFile(selectedFile);
+                                                    }
+                                                }}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="grid w-full grid-cols-1 items-center gap-2 p-4 sm:grid-cols-2 sm:gap-4">
+                                    <div aria-hidden="true" className="hidden">
+                                        <input type="text" tabIndex={-1} autoComplete="username" />
+                                        <input type="password" tabIndex={-1} autoComplete="current-password" />
+                                    </div>
+
+                                    <AppInput
+                                        // disabled={}
+                                        placeholder="Masukkan nama lengkap . . ."
+                                        label="Nama Lengkap"
+                                        value={data?.nama_lengkap}
+                                        onChange={(e) => setData('nama_lengkap', e.target.value)}
+                                        // error={errors?.nama}
+                                    />
+                                    <AppInput
+                                        // disabled={}
+                                        placeholder="Masukkan username . . ."
+                                        label="Username"
+                                        value={data?.name}
+                                        onChange={(e) => setData('name', e.target.value)}
+                                        // error={errors?.nama}
+                                    />
+                                    <AppInput
+                                        // disabled={}
+                                        placeholder="Masukkan email . . ."
+                                        label="Email"
+                                        value={data?.email}
+                                        autoComplete="off"
+                                        onChange={(e) => setData('email', e.target.value)}
+                                        // error={errors?.nama}
+                                    />
+                                    <AppInput
+                                        // disabled={}
+                                        placeholder="Masukkan No Hp . . ."
+                                        label="No Hp"
+                                        value={data?.noHp}
+                                        onChange={(e) => setData('noHp', e.target.value)}
+                                        // error={errors?.nama}
+                                        autoComplete="off"
+                                    />
+                                    <AppSelect
+                                        label="Role"
+                                        options={roleOptions}
+                                        value={data?.role?.id.toString()}
+                                        onValueChange={(e) => setData('role_id', parseInt(e))}
+                                    />
+                                    <AppInput
+                                        // disabled={}
+                                        placeholder="Masukkan password . . ."
+                                        label="Password"
+                                        autoComplete="off"
+                                        value={data?.password}
+                                        isType="password"
+                                        onChange={(e) => setData('password', e.target.value)}
+                                        // error={errors?.nama}
+                                    />
+                                </div>
                             </div>
                         )}
 
                         {selectedModalType === 'show' && (
                             <div className="p-4">
+                                <div className="flex w-full items-center justify-center">
+                                    <div className="flex h-30 w-30 items-center justify-center overflow-hidden rounded-full">
+                                        <img
+                                            src={selectedDataUser?.user_image?.image_url ?? '/images/default-account.png'}
+                                            alt="user-img"
+                                            className="h-full w-full object-contain"
+                                        />
+                                    </div>
+                                </div>
                                 <DetailItem label="Nama Lengkap" value={selectedDataUser?.nama_lengkap || '-'} />
                                 <DetailItem
                                     label="Username"

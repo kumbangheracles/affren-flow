@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Models\Role;
+use App\Models\UserImage;
 
 class User extends Authenticatable
 {
@@ -64,5 +65,10 @@ class User extends Authenticatable
     public function approverTransaksi()
     {
         return $this->hasMany(Transaksi::class, 'approved_by');
+    }
+
+    public function user_image()
+    {
+        return $this->hasOne(UserImage::class);
     }
 }

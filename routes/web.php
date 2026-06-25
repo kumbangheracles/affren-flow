@@ -57,7 +57,7 @@ Route::middleware(['auth'])->group(function () {
     // User
     Route::get('/user', [UserController::class, 'index'])->name('user.index');
     Route::post('/user', [UserController::class, 'store'])->name('user.store')->middleware('role:super_admin,Admin');
-    Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update')->middleware('role:super_admin,Admin');;
+    Route::post('/user/{id}', [UserController::class, 'update'])->name('user.update')->middleware('role:super_admin,Admin');;
     Route::delete('/user/{id}', [UserController::class, 'destroy'])->name('user.destroy')->middleware('role:super_admin,Admin');;
 
 

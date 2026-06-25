@@ -4,6 +4,7 @@ import FadeUpWrapper from '@/components/fade-up-wrapper';
 import LabaRugiCard from '@/components/laba-rugi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-shadcn/card';
 import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
 import { formatCurrency, formatDate, formatPercent } from '@/helpers/format';
 import { useCountUp } from '@/hooks/use-count';
 import { useMounted } from '@/hooks/use-mounted';
@@ -205,6 +206,16 @@ const ProjectDetailIndex = () => {
                             <p className="bg-muted text-muted-foreground rounded-md px-3 py-2 text-[10px] font-normal sm:text-sm">
                                 {proyek?.deskripsi_proyek || '-'}
                             </p>
+                        </div>
+                        <div className="mt-2">
+                            <Label className="text-[12px] font-semibold sm:text-sm">Foto Proyek</Label>
+                            <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-3">
+                                {proyek?.proyek_images?.map((file, index) => (
+                                    <div key={`new-${index}`} className="group relative aspect-square">
+                                        <img src={file?.image_url} alt={file?.id} className="h-full w-full rounded-lg object-cover" />
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </CardContent>
                 </Card>

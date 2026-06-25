@@ -6,6 +6,14 @@ export interface RoleProps {
     updated_at?: string;
 }
 
+export interface UserImage {
+    id: string;
+    user_id: string;
+    image_url: string;
+    created_at?: string;
+    updated_at?: string;
+}
+
 export interface UserProps {
     id: number;
     name: string;
@@ -21,13 +29,16 @@ export interface UserProps {
     role?: RoleProps;
     created_at: string;
     updated_at: string;
+    user_image?: UserImage;
 }
 
 export type UserPropsForm = UserProps & {
     [key: string]: any;
+    uploaded_image?: File;
+    existing_image_id?: string;
 };
 
-export const initialUserProps: UserProps = {
+export const initialUserProps: UserPropsForm = {
     id: 0,
     nama_lengkap: '',
     name: '',
