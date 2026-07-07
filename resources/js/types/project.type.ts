@@ -10,6 +10,12 @@ export interface ProyekImages {
     updated_at?: string;
 }
 
+export interface ProyekMandor extends UserProps {
+    // id: string;
+    proyek_id: string;
+    user_id: string;
+}
+
 export interface ProyekProps {
     [key: string]: any;
     proyek_id: string;
@@ -38,6 +44,9 @@ export interface ProyekProps {
     biaya_tak_terduga_persen: number;
 
     created_by?: string | number;
+
+    proyek_mandor?: ProyekMandor[];
+    mandor_ids?: string[];
 
     creator?: UserProps;
 
@@ -78,6 +87,8 @@ export const initialProyek: ProyekProps = {
     uploaded_images: [],
 
     proyek_img: '',
+
+    proyek_mandor: [],
 
     created_at: '',
     updated_at: '',

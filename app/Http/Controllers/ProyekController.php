@@ -5,11 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\JenisProyek;
 use App\Models\KategoriProyek;
 use App\Models\Proyek;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 use App\Services\FinanceService;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Role;
+use Illuminate\Validation\Rule;
+use Cloudinary\Cloudinary;
 
 class ProyekController extends Controller
 
@@ -79,10 +83,13 @@ class ProyekController extends Controller
 
         $kategori_proyeks = KategoriProyek::all();
         $jenis_proyeks = JenisProyek::all();
+        $mandorRole = Role::where('role_name', 'mandor')->first();
 
+        $list_mandors = User::where('role_id', $mandorRole->id)->get();
         return Inertia::render('project/create/index', [
             'kategori_proyeks' => $kategori_proyeks,
             'jenis_proyeks' => $jenis_proyeks,
+            'list_mandors' => $list_mandors
             // 'filters' => [
             //     'search' => $search
             // ]
@@ -94,6 +101,12 @@ class ProyekController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+
+        $mandorRole = Role::where('role_name', 'mandor')->first();
+
+        $validMandorIds = $mandorRole
+            ? User::where('role_id', $mandorRole->id)->pluck('id')->toArray()
+            : [];
         $data = $request->validate([
             'nama_proyek' => 'required|string|max:255',
             'pagu_total' => 'required|numeric|min:0',
@@ -109,11 +122,22 @@ class ProyekController extends Controller
             'uploaded_images' => 'nullable|array',
 
             'uploaded_images.*' => 'image|max:5120',
+
+            'mandor_ids' => ['required', 'array', 'min:1'],
+            'mandor_ids.*' => [
+                'exists:users,id',
+                Rule::in($validMandorIds),
+            ],
+
         ]);
 
         $data['created_by'] = Auth::id();
+        $mandorIds = $data['mandor_ids'];
+        unset($data['mandor_ids']);
 
         $proyek = Proyek::create($data);
+
+        $proyek->proyek_mandor()->sync($mandorIds);
 
         if ($request->hasFile('uploaded_images')) {
 
@@ -146,8 +170,7 @@ class ProyekController extends Controller
     public function show($proyek_id)
     {
         //
-        $proyek = Proyek::with(['kategori', 'jenis'])->with('creator.role')->with('proyek_images')
-            ->findOrFail($proyek_id);
+        $proyek = Proyek::with(['kategori', 'jenis'])->with('creator.role')->with('proyek_images')->with('proyek_mandor')->findOrFail($proyek_id);
         $anggaran = $this->financeService->hitungAnggaranProyek($proyek);
         $realisasi = $this->financeService->hitungRealisasiPerKategori($proyek);
         $laba_rugi = $this->financeService->hitungLabaRugi($proyek);
@@ -166,15 +189,18 @@ class ProyekController extends Controller
      */
     public function edit($proyek_id)
     {
-        $proyek = Proyek::with('proyek_images')->findOrFail($proyek_id);
+        $proyek = Proyek::with('proyek_images')->with('proyek_mandor')->findOrFail($proyek_id);
         $kategori_proyeks = KategoriProyek::all();
         $jenis_proyeks = JenisProyek::all();
+        $mandorRole = Role::where('role_name', 'mandor')->first();
 
+        $list_mandors = User::where('role_id', $mandorRole->id)->get();
 
         return Inertia::render('project/create/index', [
             'proyek' => $proyek,
             'kategori_proyeks' => $kategori_proyeks,
             'jenis_proyeks' => $jenis_proyeks,
+            'list_mandors' => $list_mandors
         ]);
     }
 
@@ -184,7 +210,11 @@ class ProyekController extends Controller
     public function update(Request $request, $proyek_id)
     {
         $proyek = Proyek::with('proyek_images')->findOrFail($proyek_id);
+        $mandorRole = Role::where('role_name', 'mandor')->first();
 
+        $validMandorIds = $mandorRole
+            ? User::where('role_id', $mandorRole->id)->pluck('id')->toArray()
+            : [];
         $data = $request->validate([
             'nama_proyek' => 'required|string|max:255',
             'pagu_total' => 'required|numeric|min:0',
@@ -202,6 +232,12 @@ class ProyekController extends Controller
 
             'existing_images' => 'nullable|array',
             'existing_images.*' => 'integer',
+
+            'mandor_ids' => ['required', 'array', 'min:1'],
+            'mandor_ids.*' => [
+                'exists:users,id',
+                Rule::in($validMandorIds),
+            ],
         ]);
 
         $cloudinary = app(\Cloudinary\Cloudinary::class);
@@ -249,12 +285,16 @@ class ProyekController extends Controller
             }
         }
 
-        $data['created_by'] = Auth::id();
+        // $data['created_by'] = Auth::id();
 
         unset(
             $data['uploaded_images'],
             $data['existing_images']
         );
+        $mandorIds = $data['mandor_ids'];
+        unset($data['mandor_ids']);
+
+        $proyek->proyek_mandor()->sync($mandorIds);
 
         $proyek->update($data);
 
@@ -303,6 +343,10 @@ class ProyekController extends Controller
 
             $image->delete();
         }
+        $mandorIds = $proyek['mandor_ids'];
+        unset($proyek['mandor_ids']);
+
+        $proyek->proyek_mandor()->sync($mandorIds);
 
         $proyek->delete();
 

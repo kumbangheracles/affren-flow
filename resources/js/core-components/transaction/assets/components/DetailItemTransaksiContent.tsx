@@ -55,7 +55,7 @@ const DetailItemTransaksiContent = ({ kategoriTransaksi, title, itemValueList, t
         setSelectedNama(null);
     };
 
-    console.log('Transaksi value: ', transaksiValue);
+    // console.log('Transaksi value: ', transaksiValue);
     const form = useForm<TransaksiItemForm>(initialTransaksiItem);
     const { setData, processing } = form;
     const handleSubmitTransaksi = async () => {

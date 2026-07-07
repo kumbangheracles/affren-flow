@@ -166,6 +166,12 @@ const ProjectDetailIndex = () => {
                             value={proyek?.creator?.name || '-'}
                         />
                         <DetailItem
+                            labelClassName="text-[10px] sm:text-sm"
+                            valueClassName="rounded-xl! px-2 font-semibold!"
+                            label="Mandor"
+                            values={proyek?.proyek_mandor?.map((item) => item.name) ?? []}
+                        />
+                        <DetailItem
                             labelClassName=" text-[10px] sm:text-sm"
                             valueClassName=" text-[10px] sm:text-sm"
                             label="Pagu Total"

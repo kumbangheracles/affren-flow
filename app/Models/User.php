@@ -71,4 +71,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(UserImage::class);
     }
+
+    public function proyekSebagaiMandor()
+    {
+        return $this->belongsToMany(Proyek::class, 'proyek_mandor', 'user_id', 'proyek_id')
+            ->withTimestamps();
+    }
 }

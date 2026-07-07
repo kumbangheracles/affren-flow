@@ -54,7 +54,7 @@ export function useInertiaSearch({ url, mapFn, debounce: debounceMs = 400, onRes
                     setLoading(false);
                 }
             }, debounceMs);
-            console.log('Options: ', options);
+            // console.log('Options: ', options);
         },
 
         [url, mapFn, debounceMs],

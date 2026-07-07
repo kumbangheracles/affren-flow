@@ -50,7 +50,7 @@ const TransactionIndex = ({ filters, list_transaksi }: PageProps) => {
     const form = useForm();
     // const { processing } = form;
 
-    console.log('list transaksi: ', list_transaksi);
+    // console.log('list transaksi: ', list_transaksi);
 
     const isMobile = useIsMobile();
     useEffect(() => {

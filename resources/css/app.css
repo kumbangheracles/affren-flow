@@ -386,3 +386,29 @@ input[type='number']::-webkit-inner-spin-button {
     opacity: 1;
     transform: translateY(0);
 }
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--foreground) !important;
+
+    border-radius: 9999px !important;
+}
+
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #64748b !important;
+}
+
+/* Firefox */
+.custom-scrollbar {
+    scrollbar-width: thin !important;
+
+    scrollbar-color: #94a3b8 transparent !important;
+    padding-right: 12px !important;
+}

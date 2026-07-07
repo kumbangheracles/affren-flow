@@ -38,7 +38,7 @@ type ModalType = 'put' | 'post' | 'delete' | 'show';
 const UserIndex = () => {
     const { props } = usePage<PageProps>();
     const { filters, list_user } = props;
-    console.log('Props user: ', props);
+    // console.log('Props user: ', props);
     const [selectedId, setSelectedId] = useState<number | null>(null);
     const [selectedModalType, setSelectedModalType] = useState<ModalType | null>(null);
     const [selectedDataUser, setSelectedDataUser] = useState<UserProps | null>(null);
@@ -157,8 +157,8 @@ const UserIndex = () => {
             setExistingImage((selectedData?.user_image?.image_url as string) ?? '');
         }
 
-        console.log('modal type: ', selectedModalType);
-        console.log('Selected id: ', selectedId);
+        // console.log('modal type: ', selectedModalType);
+        // console.log('Selected id: ', selectedId);
     }, [selectedModalType, selectedId]);
 
     const LIST_TYPE_COLUMNS: Column<UserProps>[] = [

@@ -265,10 +265,10 @@ const AppSelect = ({
                 {options.length > 0 && (
                     <SelectContent className="max-h-[300px]">
                         {isGrouped(options)
-                            ? options.map((group) => (
+                            ? options?.map((group) => (
                                   <SelectGroup key={group.group}>
                                       <SelectLabel className={cn(labelSizeStyles[size])}>{group.group}</SelectLabel>
-                                      {group.options.map((opt) => (
+                                      {group.options?.map((opt) => (
                                           <SelectItem
                                               style={toneStyles[tone]}
                                               className={cn('cursor-pointer font-semibold', itemSizeStyles[size])}
@@ -281,7 +281,7 @@ const AppSelect = ({
                                       ))}
                                   </SelectGroup>
                               ))
-                            : (options as SelectOption[]).map((opt) => (
+                            : (options as SelectOption[])?.map((opt) => (
                                   <SelectItem
                                       style={toneStyles[tone]}
                                       className={cn('cursor-pointer font-semibold', itemSizeStyles[size])}

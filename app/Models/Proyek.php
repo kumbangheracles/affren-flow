@@ -78,7 +78,10 @@ class Proyek extends Model
         );
     }
 
-    // public function proyek_mandor(){
-    //     return $this->hasMany(User::class, 'user_id', 'user')
-    // }
+    public function proyek_mandor()
+    {
+        return $this->belongsToMany(User::class, 'proyek_mandor', 'proyek_id', 'user_id')
+            ->select('users.id', 'users.name', 'users.nama_lengkap', 'noHp')
+            ->withTimestamps();
+    }
 }

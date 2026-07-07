@@ -1,6 +1,7 @@
 import AppDatePicker from '@/components/app-day-picker';
 import AppInput from '@/components/app-input';
 import AppSelect, { SelectOption } from '@/components/app-select';
+import AppSelectMultiple from '@/components/app-select-multiple';
 import AppTextArea from '@/components/app-textare';
 import { FileUpload, FileUploadTrigger } from '@/components/ui-shadcn/file-upload';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,7 @@ import { BreadcrumbItem } from '@/types';
 import { JenisProyek } from '@/types/jenis_proyek.type';
 import { KategoriProyek } from '@/types/kategori_proyek.type';
 import { initialProyek, ProyekImages, ProyekProps, StatusProyek } from '@/types/project.type';
+import { UserProps } from '@/types/user.type';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { Head, router, useForm, usePage } from '@inertiajs/react';
 import { format } from 'date-fns';
@@ -22,19 +24,22 @@ interface PageProps extends InertiaPageProps {
     proyek?: ProyekProps;
     kategori_proyeks?: KategoriProyek[];
     jenis_proyeks?: JenisProyek[];
+    list_mandors?: UserProps[];
 }
 
 const ProjectCreateIndex = () => {
     const { props } = usePage<PageProps>();
-    const { proyek: dataProyek, jenis_proyeks, kategori_proyeks } = props;
+    const { proyek: dataProyek, jenis_proyeks, kategori_proyeks, list_mandors } = props;
     const projectId = dataProyek?.proyek_id ?? null;
     // const { flash } = usePage().props;
+    // console.log(list_mandors);
+    const proyekMandor = dataProyek?.proyek_mandor?.map((item) => item.id.toString());
     const [existingImages, setExistingImages] = useState<ProyekImages[]>(dataProyek?.proyek_images ?? []);
-
+    const [mandorIds, setMandorIds] = useState<string[]>(proyekMandor ?? []);
     const [files, setFiles] = useState<File[]>([]);
 
     const [loading, setLoading] = useState<boolean>(false);
-    console.log('data proyek: ', dataProyek);
+    // console.log('data proyek: ', dataProyek);
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: projectId !== null ? 'Ubah proyek' : 'Buat Proyek Baru',
@@ -51,10 +56,19 @@ const ProjectCreateIndex = () => {
             setData(props.proyek as ProyekProps);
         }
     }, [projectId, dataProyek]);
-    const KategoriProyekOptions: SelectOption[] = (kategori_proyeks ?? []).map((item) => ({
+    const KategoriProyekOptions: SelectOption[] = (kategori_proyeks ?? [])?.map((item) => ({
         value: String(item.id),
         label: item.nama,
     }));
+
+    const ProyekMandorOptions: SelectOption[] = (list_mandors ?? [])?.map((item) => ({
+        value: String(item?.id),
+        label: item?.name,
+    }));
+
+    useEffect(() => {
+        setData('mandor_ids', mandorIds);
+    }, [mandorIds]);
 
     const jenisProyekOptions = (data: JenisProyek[], kategori_proyek_id: number): SelectOption[] => {
         const kategoriId = Number(kategori_proyek_id);
@@ -105,6 +119,9 @@ const ProjectCreateIndex = () => {
         // if (data.biaya_tak_terduga_persen == null || data.biaya_tak_terduga_persen < 0) errors.push('Biaya tak terduga tidak valid');
 
         if (!data.tanggal_mulai) errors.push('Tanggal mulai tidak boleh kosong');
+
+        if (mandorIds.length === 0) errors.push('Proyek minimal harus punya 1 mandor.');
+        if (mandorIds.length > 3) errors.push('Proyek maksimal punya 3 mandor.');
 
         if (data.tanggal_selesai && data.tanggal_selesai < data.tanggal_mulai) errors.push('Tanggal selesai tidak boleh sebelum tanggal mulai');
 
@@ -212,6 +229,16 @@ const ProjectCreateIndex = () => {
                         { value: 'sedang_berjalan', label: 'Berjalan' },
                         { value: 'dibatalkan', label: 'Dibatalkan' },
                     ]}
+                />
+                <AppSelectMultiple
+                    label="Mandor"
+                    // tooltip="Pilih satu atau lebih mandor untuk proyek ini"
+                    required
+                    placeholder="Pilih mandor..."
+                    options={ProyekMandorOptions}
+                    value={mandorIds}
+                    onValueChange={setMandorIds}
+                    hint="Minimal pilih 1 mandor"
                 />
                 <AppDatePicker
                     defaultValue={dataProyek?.tanggal_mulai ? new Date(dataProyek.tanggal_mulai) : undefined}
