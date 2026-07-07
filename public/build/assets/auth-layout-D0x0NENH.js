@@ -1,1 +1,0 @@
-import{j as i}from"./app-iiTwdQaS.js";function r({children:t}){return i.jsx("div",{className:"",children:t})}function n({children:t,title:s,description:u,...o}){return i.jsx(r,{...o,children:t})}export{n as A};
