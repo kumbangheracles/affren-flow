@@ -41,7 +41,7 @@ const ProjectDetailIndex = () => {
     const laba_rugi = props?.laba_rugi;
     const cashflow = props?.cashflow;
     const projectId = props?.proyek_id ?? null;
-    console.log('Props: ', props);
+    // console.log('Props: ', props);
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Detail Proyek',
