@@ -485,7 +485,7 @@ export default function Register() {
                                         {processing ? 'Loading . . .' : 'Daftar'}
                                     </Button>
 
-                                    <div className="my-[14px] flex items-center gap-3">
+                                    {/* <div className="my-[14px] flex items-center gap-3">
                                         <div className="h-px flex-1" style={{ background: 'var(--border)' }} />
                                         <span
                                             style={{
@@ -499,9 +499,9 @@ export default function Register() {
                                             atau masuk dengan
                                         </span>
                                         <div className="h-px flex-1" style={{ background: 'var(--border)' }} />
-                                    </div>
+                                    </div> */}
 
-                                    <button
+                                    {/* <button
                                         type="button"
                                         className="flex w-full items-center justify-center gap-2"
                                         style={{
@@ -534,7 +534,7 @@ export default function Register() {
                                             />
                                         </svg>
                                         Masuk dengan Google
-                                    </button>
+                                    </button> */}
                                     <div className="text-foreground mt-3 flex w-full items-center justify-center gap-1 text-[10px]">
                                         <p>Sudah punya akun?</p>
                                         <a className="hover:text-foreground/45 font-semibold" href="/login">

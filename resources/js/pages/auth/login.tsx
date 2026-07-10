@@ -581,7 +581,7 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                             {processing ? 'Memverifikasi...' : 'Masuk'}
                                         </Button>
 
-                                        <div className="my-[14px] flex items-center gap-3">
+                                        {/* <div className="my-[14px] flex items-center gap-3">
                                             <div className="h-px flex-1" style={{ background: 'var(--border)' }} />
                                             <span
                                                 style={{
@@ -595,9 +595,9 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                                 atau masuk dengan
                                             </span>
                                             <div className="h-px flex-1" style={{ background: 'var(--border)' }} />
-                                        </div>
+                                        </div> */}
 
-                                        <button
+                                        {/* <button
                                             type="button"
                                             className="flex w-full items-center justify-center gap-2"
                                             style={{
@@ -630,13 +630,13 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                                 />
                                             </svg>
                                             Masuk dengan Google
-                                        </button>
-                                        <div className="text-foreground mt-3 flex w-full items-center justify-center gap-1 text-[10px]">
+                                        </button> */}
+                                        {/* <div className="text-foreground mt-3 flex w-full items-center justify-center gap-1 text-[10px]">
                                             <p>Belum punya akun?</p>
                                             <a className="hover:text-foreground/45 font-semibold" href="/register">
                                                 daftar
                                             </a>
-                                        </div>
+                                        </div> */}
                                     </form>
                                 </div>
 
