@@ -72,7 +72,8 @@ class ForecastController extends Controller
         $trainingMonths = $request->input('training_months');
         // Ambil SEMUA data historis — tanpa filter periode
         $cashflowData = $this->financeService->aggregateCashflowBulanantAll()->toArray();
-
+        // \Log::info('Cashflow data ke Prophet:', $cashflowData);
+        //     dd($cashflowData); // ← ta
         if (count($cashflowData) < 6) {
             return back()->withErrors([
                 'data' => 'Data historis minimal 6 bulan diperlukan. '

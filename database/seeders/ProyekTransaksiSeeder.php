@@ -25,25 +25,25 @@ class ProyekTransaksiSeeder extends Seeder
 
     private const KATEGORI_DENGAN_ITEM = ['material', 'operasional', 'biaya_tak_terduga'];
 
-    // Bobot musiman per bulan (1=Jan ... 12=Des)
-    // Q1 & Q3 tinggi, Q2 & Q4 rendah — mencerminkan siklus konstruksi
+    // Bobot musiman per bulan — Q1 & Q3 tinggi, Q2 & Q4 rendah
     private const BOBOT_MUSIMAN = [
-        1  => 1.3,  // Jan — awal tahun, banyak kontrak baru
-        2  => 1.1,  // Feb
-        3  => 1.4,  // Mar — akhir Q1, puncak
-        4  => 0.8,  // Apr — awal Q2, lebih sepi
-        5  => 0.7,  // Mei
-        6  => 0.9,  // Jun
-        7  => 1.2,  // Jul — awal Q3
-        8  => 1.4,  // Agt — puncak Q3
-        9  => 1.1,  // Sep
-        10 => 0.8,  // Okt — awal Q4, mulai sepi
-        11 => 0.7,  // Nov
-        12 => 0.9,  // Des — akhir tahun
+        1  => 1.40,
+        2  => 1.10,
+        3  => 1.50,
+        4  => 0.75,
+        5  => 0.65,
+        6  => 0.90,
+        7  => 1.30,
+        8  => 1.45,
+        9  => 1.10,
+        10 => 0.70,
+        11 => 0.60,
+        12 => 0.85,
     ];
 
-    // Base pagu per bulan — akan dikalikan bobot musiman
-    private const BASE_PAGU = 250_000_000;
+    // Pagu base per proyek — realistis untuk CV kecil
+    private const BASE_PAGU_UTAMA  = 200_000_000; // proyek utama per bulan
+    private const BASE_PAGU_TAMBAHAN = 130_000_000; // proyek tambahan
 
     public function run(): void
     {
@@ -55,7 +55,17 @@ class ProyekTransaksiSeeder extends Seeder
             return;
         }
 
+        // Truncate tabel (bukan delete()) supaya aman dari SoftDeletes —
+        // ->delete() pada model dengan SoftDeletes hanya mengisi deleted_at,
+        // baris lama tetap ada di tabel dan bikin data/laporan jadi dobel.
+        \DB::statement('SET FOREIGN_KEY_CHECKS=0');
+        \DB::table('item_transaksi')->truncate();
+        \DB::table('transaksi')->truncate();
+        \DB::table('proyek')->truncate();
+        \DB::statement('SET FOREIGN_KEY_CHECKS=1');
+
         $jadwal = $this->generateJadwal();
+        $total  = count($jadwal);
 
         foreach ($jadwal as $def) {
             $mulai   = $def['mulai'];
@@ -75,45 +85,60 @@ class ProyekTransaksiSeeder extends Seeder
                 'nama_klien'         => fake()->company(),
                 'status'             => $status,
                 'deskripsi_proyek'   => fake()->sentence(10),
-                'created_by' => 1,
-
+                'created_by'         => 1,
             ]);
 
             $this->buatTransaksiPengeluaran($proyek, (float) $pagu, $mulai);
         }
 
-        $this->command->info('✓ Seeder selesai: cashflow 24 bulan dengan pola musiman.');
+        $this->command->info("✓ Seeder selesai: {$total} proyek, 24 bulan, variasi musiman.");
     }
 
     private function generateJadwal(): array
     {
-        $now         = Carbon::now()->startOfDay();
-        $windowStart = $now->copy()->subMonths(24)->startOfMonth();
-        $defs        = [];
+        $now = Carbon::now()->startOfDay();
 
+        // Tepat 24 bulan ke belakang — tidak lebih, tidak kurang
+        $windowStart = $now->copy()->subMonths(23)->startOfMonth();
+
+        $defs   = [];
         $cursor = $windowStart->copy();
 
         while ($cursor->lte($now)) {
-            $bulan  = (int) $cursor->format('n'); // 1-12
-            $bobot  = self::BOBOT_MUSIMAN[$bulan];
+            $bulan = (int) $cursor->format('n');
+            $bobot = self::BOBOT_MUSIMAN[$bulan];
 
-            // Jumlah proyek per bulan mengikuti bobot musiman
-            // Bobot tinggi = lebih banyak proyek
-            $jumlahProyek = (int) round($bobot * 1.5); // 1-3 proyek per bulan
-            $jumlahProyek = max(1, $jumlahProyek);
+            // Jumlah proyek per bulan: 1-2 saja
+            // Q1/Q3 (bobot >= 1.2): kemungkinan 2 proyek lebih besar
+            // Q2/Q4 (bobot < 1.2): hampir selalu 1 proyek
+            if ($bobot >= 1.2) {
+                $jumlahProyek = mt_rand(0, 100) < 70 ? 2 : 1; // 70% dapat 2, 30% dapat 1
+            } else {
+                $jumlahProyek = mt_rand(0, 100) < 25 ? 2 : 1; // 25% dapat 2, 75% dapat 1
+            }
 
             for ($p = 0; $p < $jumlahProyek; $p++) {
-                $mulai = $cursor->copy()->addDays(rand(0, 20));
+                // Untuk bulan berjalan (belum selesai), batasi rentang addDays
+                // supaya tanggal_mulai tidak jatuh setelah hari ini —
+                // kalau tidak, proyek "sedang_berjalan" tapi belum punya transaksi sama sekali.
+                $akhirBulanIni = $cursor->copy()->endOfMonth();
+                if ($akhirBulanIni->gt($now)) {
+                    $maxHari = max(1, $now->diffInDays($cursor));
+                    $maxHari = min(25, $maxHari);
+                } else {
+                    $maxHari = 25;
+                }
 
-                // Durasi proyek: 1 bulan saja — pengeluaran di bulan yang sama
+                $mulai   = $cursor->copy()->addDays(rand(1, $maxHari));
                 $selesai = $mulai->copy()->endOfMonth();
 
-                // Pagu mengikuti bobot musiman + variasi kecil ±15%
-                $variasi = 0.85 + (mt_rand(0, 30) / 100); // 0.85 - 1.15
-                $pagu    = (int) round(self::BASE_PAGU * $bobot * $variasi / 5_000_000) * 5_000_000;
-                $pagu    = max(50_000_000, $pagu); // minimal 50jt
+                // Pagu mengikuti bobot musiman + variasi ±25%
+                $basePagu    = $p === 0 ? self::BASE_PAGU_UTAMA : self::BASE_PAGU_TAMBAHAN;
+                $noiseFactor = 0.75 + (mt_rand(0, 50) / 100); // 0.75 - 1.25
+                $pagu        = (int) round($basePagu * $bobot * $noiseFactor / 5_000_000) * 5_000_000;
+                $pagu        = max(50_000_000, min(500_000_000, $pagu));
 
-                $pajak = fake()->randomElement([10, 11, 12]);
+                $pajak = fake()->randomElement([10, 10, 11, 11, 12]);
 
                 $defs[] = compact('mulai', 'selesai', 'pagu', 'pajak');
             }
@@ -129,30 +154,30 @@ class ProyekTransaksiSeeder extends Seeder
         float  $pagu,
         Carbon $mulai
     ): void {
-        // Semua transaksi dalam bulan yang sama dengan tanggal_mulai
-        $batasBulan = $mulai->copy()->endOfMonth();
         $now        = Carbon::now()->startOfDay();
+        $batasBulan = $mulai->copy()->endOfMonth();
 
-        // Kalau bulan ini belum selesai, batasi sampai hari ini
         if ($batasBulan->gt($now)) {
             $batasBulan = $now->copy();
         }
 
-        // Kalau mulai > now (edge case), skip
         if ($mulai->gt($now)) return;
+
+        // Rasio pengeluaran: 60%-70% dari pagu — cashflow selalu positif 30-40%
+        // Variasi kecil supaya tidak terlalu random
+        $rasioMaks = 0.60 + (mt_rand(0, 10) / 100); // 0.60 - 0.70
+        $batasMaks = (int) ($pagu * $rasioMaks);
 
         $alokasi = [];
         foreach (self::PROPORSI_PERSEN as $kat => $pct) {
-            $alokasi[$kat] = (int) round($pagu * $pct);
+            $noisePct      = 0.92 + (mt_rand(0, 16) / 100); // 0.92 - 1.08
+            $alokasi[$kat] = (int) round($pagu * $pct * $noisePct);
         }
         foreach (self::PROPORSI_FIXED as $kat => $nominal) {
             $alokasi[$kat] = (int) $nominal;
         }
 
-        // Total maksimal 70% dari pagu — cashflow selalu positif 30%
-        $batasMaks    = (int) ($pagu * 0.70);
         $totalAlokasi = array_sum($alokasi);
-
         if ($totalAlokasi > $batasMaks) {
             $faktor = $batasMaks / $totalAlokasi;
             foreach ($alokasi as $kat => &$val) {
@@ -164,7 +189,6 @@ class ProyekTransaksiSeeder extends Seeder
         foreach ($alokasi as $kategori => $budget) {
             if ($budget <= 0) continue;
 
-            // Tanggal transaksi dalam bulan mulai
             $tanggal = Carbon::createFromTimestamp(
                 rand($mulai->timestamp, $batasBulan->timestamp)
             );
@@ -178,8 +202,6 @@ class ProyekTransaksiSeeder extends Seeder
                     'tanggal'    => $tanggal,
                     'keterangan' => "Biaya tetap {$kategori}",
                     'created_by' => 1,
-                    'approved_by' => 1,
-                    'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
                 ]);
                 continue;
             }
@@ -193,8 +215,6 @@ class ProyekTransaksiSeeder extends Seeder
                     'tanggal'    => $tanggal,
                     'keterangan' => "Transaksi {$kategori}",
                     'created_by' => 1,
-                    'approved_by' => 1,
-                    'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
                 ]);
 
                 $totalItem = $this->buatItemTransaksi(
@@ -218,8 +238,6 @@ class ProyekTransaksiSeeder extends Seeder
                     'tanggal'    => $tanggal,
                     'keterangan' => "Transaksi {$kategori}",
                     'created_by' => 1,
-                    'approved_by' => 1,
-                    'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
                 ]);
             }
         }
@@ -257,7 +275,7 @@ class ProyekTransaksiSeeder extends Seeder
                 $subtotal = $qty * $harga;
             } else {
                 $porsiBase = (int) round($sisaAnggaran / ($jumlahItem - $j + 1));
-                $porsi     = (int) ($porsiBase * (0.85 + lcg_value() * 0.30));
+                $porsi     = (int) ($porsiBase * (0.80 + lcg_value() * 0.40));
                 $porsi     = max(1_000, min($porsi, $sisaAnggaran - ($jumlahItem - $j) * 1_000));
 
                 $harga    = rand(10_000, 300_000);
@@ -278,9 +296,7 @@ class ProyekTransaksiSeeder extends Seeder
                 'harga_satuan' => $harga,
                 'subtotal'     => $subtotal,
                 'keterangan'   => "Item ke-{$j}",
-                'created_by' => 1,
-                'approved_by' => 1,
-                'status' => ['belum_disetujui', 'disetujui', 'lunas'][array_rand(['belum_disetujui', 'disetujui', 'lunas'])],
+                'created_by'   => 1,
             ]);
         }
 

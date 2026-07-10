@@ -1,0 +1,1 @@
+import{j as o}from"./app-CWzsG4C9.js";import{T as s}from"./sonner-rxc_X5My.js";function i({children:t}){return o.jsxs("div",{className:"",children:[" ",o.jsx(s,{closeButton:!0,position:"top-right"}),t]})}function p({children:t,title:e,description:n,...r}){return o.jsx(i,{...r,children:t})}export{p as A};

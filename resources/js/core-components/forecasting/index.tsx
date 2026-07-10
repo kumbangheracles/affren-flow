@@ -365,7 +365,7 @@ const ForecastingIndex = () => {
 
         return () => clearTimeout(timer);
     }, [startDate, endDate]);
-
+    console.log(forecasting?.mape);
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Forecasting" />
@@ -458,11 +458,13 @@ const ForecastingIndex = () => {
                                     <p className="text-muted-foreground text-xs tracking-widest uppercase">MAPE</p>
                                     <p
                                         className={`text-2xl font-bold ${
-                                            (forecasting?.mape as number) < 10
-                                                ? 'text-emerald-500'
-                                                : (forecasting?.mape as number) < 20
-                                                  ? 'text-yellow-500'
-                                                  : 'text-rose-500'
+                                            forecasting?.mape == null
+                                                ? ''
+                                                : forecasting.mape < 10
+                                                  ? 'text-emerald-500'
+                                                  : forecasting.mape < 50
+                                                    ? 'text-yellow-500'
+                                                    : 'text-rose-500'
                                         }`}
                                     >
                                         {(forecasting?.mape as number).toFixed(2)}%

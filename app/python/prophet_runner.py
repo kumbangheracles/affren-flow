@@ -50,7 +50,7 @@ def main():
     n_months = len(df)
 
     # ── 4. Pilih model Prophet sesuai jumlah data ─────────────────────────────
-    if n_months >= 24:
+    if n_months > 30:
         model = Prophet(
             yearly_seasonality=True,
             weekly_seasonality=False,
@@ -66,10 +66,10 @@ def main():
             weekly_seasonality=False,
             daily_seasonality=False,
             interval_width=0.95,
-            changepoint_prior_scale=0.1,
-            seasonality_prior_scale=5,
+            changepoint_prior_scale=0.15,
+            seasonality_prior_scale=10,
         )
-        model.add_seasonality(name='yearly', period=365.25, fourier_order=3)
+        model.add_seasonality(name='yearly', period=365.25, fourier_order=2)
     else:
         model = Prophet(
             yearly_seasonality=False,

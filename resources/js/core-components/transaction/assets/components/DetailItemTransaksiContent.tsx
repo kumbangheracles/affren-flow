@@ -188,7 +188,7 @@ const DetailItemTransaksiContent = ({ kategoriTransaksi, title, itemValueList, t
                                             </h4>
                                             <div className="flex items-center gap-2">
                                                 <div className="my-2 hidden max-w-30 sm:block">
-                                                    {currentRole === 'admin' && (
+                                                    {(currentRole === 'admin' || currentRole === 'super_admin') && (
                                                         <>
                                                             {item?.status !== 'lunas' && (
                                                                 <AppSelect

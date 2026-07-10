@@ -18,97 +18,36 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        $roles = Role::pluck('id', 'role_name');
-        // User::factory(10)->create();
-        $this->call([
-            RoleSeeder::class,
+        $this->call(RoleSeeder::class);
 
-        ]);
-        User::factory()->create([
-            'name' => 'superadmin',
-            'nama_lengkap' => 'Super Admin',
-            'email' => 'superadmin@superadmin.com',
-            'password' => bcrypt('superadmin123'),
-            'noHp' => '08129523123123',
-            'role_id' => Role::where('role_name', 'super_admin')->value('id'),
-        ]);
-        User::factory()->create([
-            'name' => 'admintest',
-            'nama_lengkap' => 'Super Admin',
-            'email' => 'admintest@admintest.com',
-            'password' => bcrypt('admintest123'),
-            'noHp' => '08129523123123',
-            'role_id' => Role::where('role_name', 'Admin')->value('id'),
-        ]);
-        User::factory()->create([
-            'name' => 'mandortest',
-            'nama_lengkap' => 'Super Admin',
-            'email' => 'mandortest@mandortest.com',
-            'password' => bcrypt('mandortest123'),
-            'noHp' => '08129523123123',
-            'role_id' => Role::where('role_name', 'Mandor')->value('id'),
-        ]);
-        User::factory()->create([
-            'name' => 'herkalsuperadmin',
-            'nama_lengkap' => 'Ahmad Herkal Taqyudin',
-            'email' => 'herkal@superadmin.com',
-            'password' => bcrypt('herkal123'),
-            'noHp' => '08129523123123',
-            'role_id' => Role::where('role_name', 'super_admin')->value('id'),
-        ]);
-        User::factory()->create([
-            'name' => 'herkaladmin',
-            'nama_lengkap' => 'Ahmad Herkal Taqyudin',
-            'email' => 'herkal@admin.com',
-            'password' => bcrypt('herkal123'),
-            'noHp' => '0812959123123123',
-            'role_id' => Role::where('role_name', 'admin')->value('id'),
-        ]);
+        $users = [
+            ['name' => 'superadmin',      'email' => 'superadmin@superadmin.com', 'password' => 'superadmin123', 'nama_lengkap' => 'Super Admin',           'noHp' => '08129523123123',  'role' => 'super_admin', 'isActive' => true],
+            ['name' => 'admintest',       'email' => 'admintest@admintest.com',   'password' => 'admintest123',  'nama_lengkap' => 'Admin Test',             'noHp' => '08129523123124',  'role' => 'Admin',       'isActive' => true],
+            ['name' => 'mandortest',      'email' => 'mandortest@mandortest.com', 'password' => 'mandortest123', 'nama_lengkap' => 'Mandor Test',            'noHp' => '08129523123125',  'role' => 'Mandor',      'isActive' => true],
+            ['name' => 'herkalsuperadmin', 'email' => 'herkal@superadmin.com',     'password' => 'herkal123',     'nama_lengkap' => 'Ahmad Herkal Taqyudin', 'noHp' => '08129523123126',  'role' => 'super_admin', 'isActive' => true],
+            ['name' => 'herkaladmin',     'email' => 'herkal@admin.com',          'password' => 'herkal123',     'nama_lengkap' => 'Ahmad Herkal Taqyudin', 'noHp' => '08129523123127',  'role' => 'Admin',       'isActive' => true],
+            ['name' => 'herkalmandor',    'email' => 'herkal@mandor.com',         'password' => 'herkal123',     'nama_lengkap' => 'Ahmad Herkal Taqyudin', 'noHp' => '08129523123128',  'role' => 'Mandor',      'isActive' => true],
+            ['name' => 'jamaladmin',      'email' => 'jamal@admin.com',           'password' => 'jamal123',      'nama_lengkap' => 'Jamal bin Jamal',       'noHp' => '08129523123129',  'role' => 'Admin',       'isActive' => true],
+            ['name' => 'wahyumandor',     'email' => 'wahyu@mandor.com',          'password' => 'wahyu123',      'nama_lengkap' => 'Wahyu Wahyudi',         'noHp' => '08129523123130',  'role' => 'Mandor',      'isActive' => true],
+            ['name' => 'donimandor',      'email' => 'doni@mandor.com',           'password' => 'doni123',       'nama_lengkap' => 'Doni Mandor',           'noHp' => '08129523123131',  'role' => 'Mandor',      'isActive' => true],
+        ];
 
-        User::factory()->create([
-            'name' => 'herkalmandor',
-            'nama_lengkap' => 'Ahmad Herkal Taqyudin',
-            'email' => 'herkal@mandor.com',
-            'password' => bcrypt('herkal123'),
-            'isActive' => true,
-            'noHp' => '081295231231999',
-            'role_id' => Role::where('role_name', 'Mandor')->value('id'),
-        ]);
-        User::factory()->create([
-            'name' => 'jamaladmin',
-            'nama_lengkap' => 'Jamal bin Jamal',
-            'email' => 'jamal@admin.com',
-            'password' => bcrypt('jamal123'),
-            'isActive' => true,
-            'noHp' => '08129523123777',
-            'role_id' => Role::where('role_name', 'admin')->value('id'),
-        ]);
-        User::factory()->create([
-            'name' => 'wahyumandor',
-            'nama_lengkap' => 'Wahyu wahyudi',
-            'email' => 'wahyu@mandor.com',
-            'password' => bcrypt('wahyu123'),
-            'isActive' => true,
-            'noHp' => '08129523123767',
-            'role_id' => Role::where('role_name', 'Mandor')->value('id'),
-        ]);
-        User::factory()->create([
-            'name' => 'donimandor',
-            'nama_lengkap' => 'Doni Mandor',
-            'email' => 'doni@mandor.com',
-            'password' => bcrypt('doni123'),
-            'isActive' => true,
-            'noHp' => '08129523128767',
-            'role_id' => Role::where('role_name', 'Mandor')->value('id'),
-        ]);
+        foreach ($users as $u) {
+            User::create([
+                'name'         => $u['name'],
+                'email'        => $u['email'],
+                'password'     => bcrypt($u['password']),
+                'nama_lengkap' => $u['nama_lengkap'],
+                'noHp'         => $u['noHp'],
+                'isActive'     => $u['isActive'],
+                'role_id'      => Role::where('role_name', $u['role'])->value('id'),
+            ]);
+        }
 
         $this->call([
             KategoriProyekSeeder::class,
             JenisProyekSeeder::class,
-            // ProyekTransaksiSeeder::class,
+            ProyekTransaksiSeeder::class,
         ]);
-
-        // $this->call(ProyekSeeder::class);
-        // $this->call(TransaksiSeeder::class);
     }
 }

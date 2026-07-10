@@ -5,7 +5,8 @@ import { Label } from '@/components/ui/label';
 import AuthLayout from '@/layouts/auth-layout';
 import { Head, useForm } from '@inertiajs/react';
 import { Eye, EyeOff, Loader2, Lock, LogIn, Mail, ShieldCheck } from 'lucide-react';
-import { FormEventHandler, useState } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 interface LoginForm {
     email: string;
@@ -263,7 +264,14 @@ export default function Login({ status, canResetPassword }: LoginProps) {
         password: '',
         remember: false,
     });
-
+    useEffect(() => {
+        if (errors?.email) {
+            toast.error(errors.email);
+        }
+        if (errors?.password) {
+            toast.error(errors.password);
+        }
+    }, [errors]);
     const validate = (): boolean => {
         const errs: Partial<LoginForm> = {};
         if (!data.email) {
