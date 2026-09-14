@@ -443,7 +443,7 @@ export default function AffrenProfile() {
             <Head title="Selamat Datang - Penyedia Jasa Konstruksi" />
             <nav className="cp-nav">
                 <div className="cp-logo-wrap">
-                    <span className="cp-logo-main">Affren Nurzzahrah</span>
+                    <span className="cp-logo-main">Afreen Nurzzahrah</span>
                     <span className="cp-logo-sub">Jasa Konstruksi</span>
                 </div>
                 <ul className="cp-nav-links">
@@ -478,7 +478,7 @@ export default function AffrenProfile() {
                     <div className="cp-hero-tag">Penyedia Jasa Konstruksi</div>
                     <h1 className="cp-h1">
                         Membangun
-                        <em className="cp-h1-company">Affren Nurzzahrah</em>
+                        <em className="cp-h1-company">Afreen Nurzzahrah</em>
                         untuk Indonesia
                     </h1>
                     <p className="cp-hero-sub">
@@ -540,7 +540,7 @@ export default function AffrenProfile() {
                             Mitra konstruksi yang <em>dapat diandalkan</em>
                         </h2>
                         <p className="cp-section-sub">
-                            CV. Affren Nurzzahrah adalah perusahaan jasa konstruksi yang berfokus pada pengerjaan proyek gedung, irigasi, dan
+                            CV. Afreen Nurzzahrah adalah perusahaan jasa konstruksi yang berfokus pada pengerjaan proyek gedung, irigasi, dan
                             infrastruktur jalan. Kami berkomitmen menghadirkan kualitas terbaik di setiap lini pekerjaan.
                         </p>
                         <div className="cp-value-list">
@@ -642,7 +642,7 @@ export default function AffrenProfile() {
 
             <footer className="cp-footer">
                 <div>
-                    <div className="cp-footer-logo">Affren Nurzzahrah</div>
+                    <div className="cp-footer-logo">Afreen Nurzzahrah</div>
                     <div className="cp-footer-sub">Jasa Konstruksi</div>
                     <Button onClick={() => router.visit('/login')} className="text-foreground mt-2 flex items-center gap-3 font-serif">
                         <p>Masuk Sebagai Admin</p>
@@ -666,7 +666,7 @@ export default function AffrenProfile() {
                         </svg>
                     </Button>
                 </div>
-                <p className="cp-footer-copy">© 2026 CV. Affren Nurzzahrah. Hak cipta dilindungi.</p>
+                <p className="cp-footer-copy">© 2026 CV. Afreen Nurzzahrah. Hak cipta dilindungi.</p>
                 <ul className="cp-footer-links">
                     {['Profil', 'Layanan', 'Kontak'].map((l) => (
                         <li key={l}>

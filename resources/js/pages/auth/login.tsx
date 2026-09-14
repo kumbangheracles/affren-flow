@@ -328,11 +328,11 @@ export default function Login({ status, canResetPassword }: LoginProps) {
                                 letterSpacing: '0.06em',
                             }}
                         >
-                            AFFREN<span style={{ color: '#c9a84c' }}>FLOW</span>
+                            AFREEN<span style={{ color: '#c9a84c' }}>FLOW</span>
                         </span>
                     </div>
 
-                    <div className="mt-14 flex min-h-screen w-full max-w-sm overflow-hidden md:mt-0 md:max-w-7xl">
+                    <div className="flex min-h-screen w-full overflow-hidden">
                         <FinanceBanner />
 
                         <div className="bg-muted relative flex flex-1 items-center justify-center px-4 py-8 sm:px-8 md:py-10">

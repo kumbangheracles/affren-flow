@@ -140,7 +140,7 @@ export default function Register() {
                             letterSpacing: '0.06em',
                         }}
                     >
-                        AFFREN<span style={{ color: '#c9a84c' }}>FLOW</span>
+                        AFREEN<span style={{ color: '#c9a84c' }}>FLOW</span>
                     </span>
                 </div>
 

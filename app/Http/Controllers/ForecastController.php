@@ -102,7 +102,8 @@ class ForecastController extends Controller
         $lines      = array_filter(explode("\n", trim($output)));
         $lastLine   = end($lines);
         $result     = json_decode($lastLine, true);
-
+        // Setelah $result didapat
+        \Log::info(json_encode($result['actual']));
         if (!$result || ($result['status'] ?? '') !== 'success') {
             return back()->withErrors([
                 'forecast' => 'Prophet error: ' . ($result['error'] ?? $output),

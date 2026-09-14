@@ -32,7 +32,7 @@ interface PageProps extends InertiaPageProps {
 }
 
 const navHeaderItems = [
-    { key: 'affren_flow', name: 'AffrenFlow', value: 'personal', plan: 'Test' },
+    { key: 'afreen_flow', name: 'AfreenFlow', value: 'personal', plan: 'Test' },
     { key: 'test_1', name: 'Test 1', value: 'acme', plan: 'Test' },
     { key: 'test_2', name: 'Test 2', value: 'monsters', plan: 'Test' },
 ];
