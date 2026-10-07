@@ -96,7 +96,7 @@ const ProjectIndex = ({ proyeks, filters }: PropTypes) => {
     };
 
     const handleUpdateOptionStatus = (proyek_id: string, status: StatusProyek, nama_proyek: string) => {
-        if (currentRole !== 'admin') {
+        if (currentRole !== 'admin' && currentRole !== 'super_admin') {
             toast?.info('Hanya admin yang bisa ubah status proyek.');
             return;
         }

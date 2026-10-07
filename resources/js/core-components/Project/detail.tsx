@@ -1,5 +1,4 @@
 import DetailItem from '@/components/app-detail-item';
-import CashFlowCard from '@/components/cashflow-card';
 import FadeUpWrapper from '@/components/fade-up-wrapper';
 import LabaRugiCard from '@/components/laba-rugi-card';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui-shadcn/card';
@@ -290,14 +289,14 @@ const ProjectDetailIndex = () => {
                     status={laba_rugi?.status}
                 />
             </FadeUpWrapper>
-            <FadeUpWrapper delay={200}>
+            {/* <FadeUpWrapper delay={200}>
                 <CashFlowCard
                     breakdown={cashflow?.breakdown}
                     kasKeluar={cashflow?.total_pengeluaran}
                     kasMasuk={cashflow?.pemasukan}
                     netCash={cashflow?.cashflow}
                 />
-            </FadeUpWrapper>
+            </FadeUpWrapper> */}
             <FadeUpWrapper delay={200}>
                 <Card className="border-primary/20 bg-card mx-4 mt-2 mb-4">
                     <CardHeader className="border-border border-b pb-3">

@@ -400,8 +400,8 @@ export default function Dashboard() {
                             value={periode ?? [{}]}
                             emptyMsg="Belum ada periode saat ini"
                             onValueChange={handlePeriodeChange}
-                            label="Pilih periode"
-                            placeholder="Pilih . . ."
+                            label="Kuartal"
+                            placeholder="Pilih kuartal . . ."
                             tooltip="Mempengaruhi chart pemasukan, pengeluaran, dan cashflow bulanan"
                         />
                     </div>

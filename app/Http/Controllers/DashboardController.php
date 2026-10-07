@@ -18,10 +18,15 @@ class DashboardController extends Controller
         Carbon::setLocale('id');
         $periode = $request->query('bulan', null);
 
+        // Ganti baris $defaultValue yang lama dengan ini
+        $currentQ     = (int) ceil(Carbon::now()->month / 3);
+        $qStartMonth  = ($currentQ - 1) * 3 + 1;
+        $qEndMonth    = $currentQ * 3;
+
         $defaultValue =
-            Carbon::now()->subMonths(5)->format('Y-m')
+            Carbon::now()->month($qStartMonth)->startOfMonth()->format('Y-m')
             . ':' .
-            Carbon::now()->format('Y-m');
+            Carbon::now()->month($qEndMonth)->endOfMonth()->format('Y-m');
 
 
         if (!$periode || !str_contains($periode, ':')) {
@@ -51,7 +56,7 @@ class DashboardController extends Controller
         ]);
     }
 
-    private function generatePeriodeOptions(int $perPeriode = 3, int $maxOpsi = 5): array
+    private function generatePeriodeOptions(int $maxOpsi = 8): array
     {
         $bulanTertua = Transaksi::query()
             ->selectRaw("DATE_FORMAT(tanggal, '%Y-%m-01') as bulan")
@@ -61,23 +66,37 @@ class DashboardController extends Controller
         if (!$bulanTertua) return [];
 
         $dataStart = Carbon::parse($bulanTertua)->startOfMonth();
-        $end       = Carbon::now()->startOfMonth();
+        $now       = Carbon::now();
         $options   = [];
-        $cursor    = $end->copy();
 
-        while ($cursor->gte($dataStart) && count($options) < $maxOpsi) {
-            $periodeStart = $cursor->copy()->subMonths($perPeriode - 1)->startOfMonth();
+        // Kuartal sekarang mundur sampai kuartal paling awal
+        $currentQuarter = (int) ceil($now->month / 3);
+        $currentYear    = $now->year;
 
-            if ($periodeStart->lt($dataStart)) {
-                $periodeStart = $dataStart->copy();
-            }
+        $q = $currentQuarter;
+        $y = $currentYear;
+
+        while (count($options) < $maxOpsi) {
+            $startMonth = ($q - 1) * 3 + 1;
+            $endMonth   = $q * 3;
+
+            $qStart = Carbon::create($y, $startMonth, 1)->startOfMonth();
+            $qEnd   = Carbon::create($y, $endMonth, 1)->endOfMonth();
+
+            // Stop kalau sudah melewati data paling awal
+            if ($qEnd->lt($dataStart)) break;
 
             $options[] = [
-                'value' => $periodeStart->format('Y-m') . ':' . $cursor->format('Y-m'),
-                'label' => $periodeStart->translatedFormat('M Y') . ' – ' . $cursor->translatedFormat('M Y'),
+                'value' => $qStart->format('Y-m') . ':' . $qEnd->format('Y-m'),
+                'label' => "Q{$q} {$y}",
             ];
 
-            $cursor->subMonths($perPeriode);
+            // Mundur satu kuartal
+            $q--;
+            if ($q < 1) {
+                $q = 4;
+                $y--;
+            }
         }
 
         return $options;
