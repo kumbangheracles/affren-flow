@@ -120,7 +120,7 @@ class ForecastController extends Controller
                 'periods'    => $result['periods'],
                 'trained_on' => $result['trained_on'],
                 'mae'        => $result['mae'],   // ← tambah
-                'rmse'  => $result['rmse'],
+                // 'rmse'  => $result['rmse'],
                 'smape' => $result['smape'],
                 'mape'  => $result['mape'],
                 'summary'    => $this->financeService->summaryPerusahaan(), // pakai default

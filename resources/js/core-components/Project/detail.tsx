@@ -16,7 +16,7 @@ import { RealisasiProps } from '@/types/realisasi.type';
 import { PageProps as InertiaPageProps } from '@inertiajs/core';
 import { Head, router, usePage } from '@inertiajs/react';
 import { saveAs } from 'file-saver';
-import { ArrowLeft, Download, FileSpreadsheet } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import * as XLSX from 'xlsx';
 
 interface PageProps extends InertiaPageProps {
@@ -114,11 +114,11 @@ const ProjectDetailIndex = () => {
                         <ArrowLeft className="h-4 w-4" />
                         Kembali
                     </Button>
-                    <Button onClick={exportToExcel} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
+                    {/* <Button onClick={exportToExcel} size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90 gap-2">
                         <FileSpreadsheet className="h-4 w-4" />
                         Download Excel
                         <Download className="h-3.5 w-3.5 opacity-70" />
-                    </Button>
+                    </Button> */}
                 </div>
             </div>
             <FadeUpWrapper delay={200}>

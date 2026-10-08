@@ -326,9 +326,9 @@ const ForecastingIndex = () => {
     const minForecast = forecastList.length > 0 ? Math.min(...forecastList.map((r) => r.yhat_lower)) : 0;
     const summary = forecasting?.summary ?? null;
 
-    // useEffect(() => {
-    //     console.log('Hasil forecast: ', forecasting);
-    // }, [forecasting]);
+    useEffect(() => {
+        console.log('Hasil forecast: ', forecasting);
+    }, [forecasting]);
     const fetchCashflow = async (page = currentPage, perPage = currentPerPage) => {
         try {
             const res = await axios.get('/cashflow', {

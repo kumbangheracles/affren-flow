@@ -65,18 +65,28 @@ class FinanceService
 
     public function hitungLabaRugi(Proyek $proyek): array
     {
-        $pemasukan   = (float) $proyek->pagu_total;
-        $pengeluaran = $proyek->transaksi->sum('jumlah');
-        $selisih     = $pemasukan - $pengeluaran;
+        $pemasukan = (float) $proyek->pagu_total;
+
+        // Total transaksi pengeluaran
+        $pengeluaranTransaksi = $proyek->transaksi->sum('jumlah');
+
+        // Pajak proyek
+        $nilaiPajak = $pemasukan * ((float) $proyek->pajak_persen / 100);
+
+        // Total pengeluaran termasuk pajak
+        $pengeluaran = $pengeluaranTransaksi + $nilaiPajak;
+
+        $selisih = $pemasukan - $pengeluaran;
 
         return [
-            'pemasukan'   => $pemasukan,
-            'pengeluaran' => $pengeluaran,
-            'selisih'     => $selisih,
-            'status'      => $selisih >= 0 ? 'laba' : 'rugi',
+            'pemasukan'             => $pemasukan,
+            'pengeluaran_transaksi' => $pengeluaranTransaksi,
+            'pajak'                 => $nilaiPajak,
+            'pengeluaran'           => $pengeluaran,
+            'selisih'               => $selisih,
+            'status'                => $selisih >= 0 ? 'laba' : 'rugi',
         ];
     }
-
     public function laporanKeuanganPerusahaan(): array
     {
         $proyeks = Proyek::with('transaksi')->get();
