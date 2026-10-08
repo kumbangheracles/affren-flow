@@ -93,12 +93,12 @@ const fmtFull = (n: number) =>
 
 const fmtMonth = (ds: string) => new Date(ds).toLocaleDateString('id-ID', { month: 'short', year: '2-digit' });
 
-const PERIOD_OPTIONS = [6, 9, 12, 15, 18, 21, 24].map((n) => ({
+const PERIOD_OPTIONS = [12, 24].map((n) => ({
     value: String(n),
     label: `${n} bulan`,
 }));
 
-const TRAINING_OPTIONS = [6, 9, 12, 15, 18, 21, 24].map((n) => ({
+const TRAINING_OPTIONS = [12, 24].map((n) => ({
     value: String(n),
     label: `${n} bulan`,
 }));
